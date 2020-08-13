@@ -25,7 +25,10 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
 	const LOCALE_KEY = 'language';
 
 	protected $casts = [
-		'source' => 'json',
+		'seo' => 'json',
+        'source' => 'json',
+        'publish_date' => 'datetime',
+        'publish_date' => 'datetime',
 	];
 
 	protected $medias = [
