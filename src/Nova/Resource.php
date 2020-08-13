@@ -5,11 +5,12 @@ namespace Armincms\Blogger\Nova;
 use Illuminate\Http\Request;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel; 
-use Laravel\Nova\Fields\{ID, Text, Textarea}; 
+use Laravel\Nova\Fields\{ID, Text, Textarea, Number, Password, DateTime}; 
 use Armincms\Nova\Resource as BaseResource;
 use Armincms\Fields\{Targomaan, BelongsToMany};
 use Whitecube\NovaFlexibleContent\Flexible;
 use Outhebox\NovaHiddenField\HiddenField;
+use OwenMelbz\RadioField\RadioButton;
 use Inspheric\Fields\Url;
 
 abstract class Resource extends BaseResource
@@ -33,7 +34,7 @@ abstract class Resource extends BaseResource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'title';
 
     /**
      * The columns that should be searched.
@@ -41,7 +42,7 @@ abstract class Resource extends BaseResource
      * @var array
      */
     public static $search = [
-        'id',
+        'id', 'title'
     ];
 
     /**
@@ -74,6 +75,14 @@ abstract class Resource extends BaseResource
                     ->defaultValue(static::class)
                     ->onlyOnForms(),
 
+                RadioButton::make(__('Mark As'), 'marked_as')
+                    ->marginBetween() 
+                    ->options([
+                        'draft' => __('Draft'), 
+                        'publish' => __('Publish'),
+                        'pending' => __('Pending'), 
+                    ]), 
+
                 Text::make(__('Title'), 'title')
                     ->required(), 
 
@@ -86,7 +95,10 @@ abstract class Resource extends BaseResource
                     ->resolveUsing(function($value, $resource) { 
                         return $resource->url();
                     })
-                    ->fillUsing(function() {})
+                    ->fillUsing(function() {}),
+
+                Number::make(__('Hits'), 'hits')
+                    ->exceptOnForms(),
             ]),
 
             $this->when(static::class === Article::class, Flexible::make(__('References'), 'source')
@@ -117,6 +129,22 @@ abstract class Resource extends BaseResource
 
                 $this->gutenbergField(), 
             ]))->withoutToolbar(),
+
+            new Panel(__('Advanced'), [
+                new Targomaan([
+                    $this->seoField(),
+                ]),
+
+                Password::make(__('Password'), 'password')
+                    ->nullable(),
+
+                DateTime::make(__('Publish Date'), 'publish_date')
+                    ->nullable()
+                    ->default(now()),
+
+                DateTime::make(__('Archive Date'), 'archive_date')
+                    ->nullable(), 
+            ]),
 
             new Panel(__('Media'), [
                 (new Targomaan([
