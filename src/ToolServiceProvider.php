@@ -3,6 +3,7 @@
 namespace Armincms\Blogger;
  
 use Illuminate\Support\ServiceProvider; 
+use Illuminate\Support\Collection; 
 use CodencoDev\NovaGridSystem\NovaGridSystem;
 use Laravel\Nova\Nova as LaravelNova; 
 
@@ -48,6 +49,12 @@ class ToolServiceProvider extends ServiceProvider
             $blog->pushComponent(new Components\Article);
             $blog->pushComponent(new Components\Podcast);
             $blog->pushComponent(new Components\Category);
+        });
+
+        Collection::macro('filterForDetail', function($request, $resource) {
+            return $this->filter(function ($field) use ($resource, $request) {
+                return $field->isShownOnDetail($request, $resource);
+            })->values();
         });
     }
 }
