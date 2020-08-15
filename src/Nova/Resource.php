@@ -20,7 +20,7 @@ abstract class Resource extends BaseResource
      *
      * @var string
      */
-    public static $model = 'Armincms\Blogger\Blog';
+    public static $model = 'Armincms\\Blogger\\Blog';
 
     /**
      * The logical group associated with the resource.
@@ -81,7 +81,8 @@ abstract class Resource extends BaseResource
                         'draft' => __('Draft'), 
                         'publish' => __('Publish'),
                         'pending' => __('Pending'), 
-                    ]), 
+                    ])
+                    ->default('draft'), 
 
                 Text::make(__('Title'), 'title')
                     ->required(), 
@@ -140,7 +141,7 @@ abstract class Resource extends BaseResource
 
                 DateTime::make(__('Publish Date'), 'publish_date')
                     ->nullable()
-                    ->default(now()),
+                    ->default((string) now()),
 
                 DateTime::make(__('Archive Date'), 'archive_date')
                     ->nullable(), 

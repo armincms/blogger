@@ -16,9 +16,9 @@ use Core\HttpSite\Component;
 
 class Blog extends Model implements HasMedia, Translatable, Authorizable
 {
-	use SoftDeletes, IntractsWithMedia, Authorization, InteractsWithTargomaan, Categorizable, Taggable;
-
-	use IntractsWithSite, HasPermalink, Sluggable {
+	use SoftDeletes, IntractsWithMedia, Authorization, InteractsWithTargomaan; 
+    use Categorizable, Taggable, IntractsWithSite, HasPermalink, HasPublish;
+    use Sluggable {
 		scopeFindSimilarSlugs as sluggableSimilarSlugs;
 	}
 
@@ -28,7 +28,7 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
 		'seo' => 'json',
         'source' => 'json',
         'publish_date' => 'datetime',
-        'publish_date' => 'datetime',
+        'archive_date' => 'datetime',
 	];
 
 	protected $medias = [
