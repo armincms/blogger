@@ -17,6 +17,7 @@ class ToolServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->registerWebComponents();
 
         LaravelNova::serving([$this, 'servingNova']);
     }
@@ -30,15 +31,16 @@ class ToolServiceProvider extends ServiceProvider
             Nova\Article::class,
             Nova\Category::class,
             Nova\Tag::class,
-        ]); 
+        ]);
+
+        Collection::macro('filterForDetail', function($request, $resource) {
+            return $this->filter(function ($field) use ($resource, $request) {
+                return $field->isShownOnDetail($request, $resource);
+            })->values();
+        }); 
     }
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function registerWebComponents()
     { 
         \Site::push('blog', function($blog) {
             $blog->directory('blog');
@@ -49,12 +51,6 @@ class ToolServiceProvider extends ServiceProvider
             $blog->pushComponent(new Components\Article);
             $blog->pushComponent(new Components\Podcast);
             $blog->pushComponent(new Components\Category);
-        });
-
-        Collection::macro('filterForDetail', function($request, $resource) {
-            return $this->filter(function ($field) use ($resource, $request) {
-                return $field->isShownOnDetail($request, $resource);
-            })->values();
         });
     }
 }
