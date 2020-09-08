@@ -68,9 +68,23 @@ abstract class Resource extends BaseResource
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable(), 
+            ID::make()->sortable(),  
 
             new Targomaan([ 
+
+                Url::make(__('Title'), 'url')
+                    ->exceptOnForms()
+                    ->alwaysClickable() 
+                    ->resolveUsing(function($value, $resource, $attribute) {
+                        return $this->site()->url(urldecode($value));
+                    })
+                    ->titleUsing(function($value, $resource) {
+                        return $this->title;
+                    }) 
+                    ->labelUsing(function($value, $resource) {
+                        return $this->title;
+                    }),
+                
                 HiddenField::make('resource')
                     ->defaultValue(static::class)
                     ->onlyOnForms(),
@@ -85,18 +99,21 @@ abstract class Resource extends BaseResource
                     ->default('draft'), 
 
                 Text::make(__('Title'), 'title')
-                    ->required(), 
+                    ->required()
+                    ->onlyOnForms(), 
 
                 $this->slugField(),
 
                 Url::make('URL')
-                    ->readonly()
+                    ->alwaysClickable()
                     ->hideWhenCreating()
-                    ->clickable()
-                    ->resolveUsing(function($value, $resource) { 
-                        return $resource->url();
+                    ->onlyOnForms()
+                    ->readOnly()
+                    ->resolveUsing(function($value, $resource, $attribute) {
+                        return $this->site()->url(urldecode($value));
                     })
                     ->fillUsing(function() {}),
+
 
                 Number::make(__('Hits'), 'hits')
                     ->exceptOnForms(),
@@ -104,6 +121,7 @@ abstract class Resource extends BaseResource
 
             $this->when(static::class === Article::class, Flexible::make(__('References'), 'source')
                 ->collapsed()
+                ->hideFromIndex()
                 ->button(__('Add Reference'))
                 ->addLayout(__('Source'), 'source', [
                     Text::make(__('Title'), 'title')
@@ -133,23 +151,31 @@ abstract class Resource extends BaseResource
 
             new Panel(__('Advanced'), [
                 new Targomaan([
-                    $this->seoField(),
+                    $this->seoField()
+                        ->hideFromIndex(),
                 ]),
 
                 Password::make(__('Password'), 'password')
-                    ->nullable(),
+                    ->nullable()
+                    ->hideFromIndex(),
 
                 DateTime::make(__('Publish Date'), 'publish_date')
                     ->nullable()
-                    ->default((string) now()),
+                    ->default((string) now())
+                    ->hideFromIndex(),
 
                 DateTime::make(__('Archive Date'), 'archive_date')
-                    ->nullable(), 
+                    ->nullable()
+                    ->hideFromIndex(), 
             ]),
 
             new Panel(__('Media'), [
                 (new Targomaan([
-                    $this->imageField(),
+                    Fields\Images::make(__('Featured Image'), 'image')
+                        ->conversionOnPreview('thumbnail') 
+                        ->conversionOnDetailView('thumbnail') 
+                        ->conversionOnIndexView('icon')
+                        ->fullSize(),
                 ]))->withoutToolbar(),
             ]),
 

@@ -2,11 +2,14 @@
 
 namespace Armincms\Blogger;
 
+use Illuminate\Support\Str; 
+use Illuminate\Support\Collection; 
 use Illuminate\Database\Eloquent\{Model, Builder, SoftDeletes}; 
 use Armincms\Concerns\{IntractsWithMedia, Authorization};
 use Armincms\Contracts\Authorizable;
 use Armincms\Targomaan\Concerns\InteractsWithTargomaan;
 use Armincms\Targomaan\Contracts\Translatable;
+use Armincms\Fields\TargomaanField;
 use Armincms\Categorizable\Categorizable;
 use Armincms\Taggable\Taggable;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -16,11 +19,14 @@ use Core\HttpSite\Component;
 
 class Blog extends Model implements HasMedia, Translatable, Authorizable
 {
-	use SoftDeletes, IntractsWithMedia, Authorization, InteractsWithTargomaan; 
+	use SoftDeletes, Authorization, InteractsWithTargomaan; 
     use Categorizable, Taggable, IntractsWithSite, HasPermalink, HasPublish;
     use Sluggable {
-		scopeFindSimilarSlugs as sluggableSimilarSlugs;
+		scopeFindSimilarSlugs as sluggableSimilarSlugs; 
 	}
+    use IntractsWithMedia {
+        getMedia as spatieGetMedia; 
+    }
 
 	const LOCALE_KEY = 'language';
 
@@ -38,7 +44,22 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
 				'*', 'blog', 'blog.list'
 			],
 		]
-	]; 
+	];  
+
+    /**
+     * Get media collection by its collectionName.
+     *
+     * @param string $collectionName
+     * @param array|callable $filters
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getMedia(string $collectionName = 'default', $filters = []): Collection
+    {
+        return $this->spatieGetMedia(
+            Str::before($collectionName, TargomaanField::Delimiter()), $filters
+        );
+    }
 
     /**
      * Return the sluggable configuration array for this model.
