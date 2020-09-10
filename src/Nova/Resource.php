@@ -171,11 +171,7 @@ abstract class Resource extends BaseResource
 
             new Panel(__('Media'), [
                 (new Targomaan([
-                    Fields\Images::make(__('Featured Image'), 'image')
-                        ->conversionOnPreview('thumbnail') 
-                        ->conversionOnDetailView('thumbnail') 
-                        ->conversionOnIndexView('icon')
-                        ->fullSize(),
+                    $this->imageField(),
                 ]))->withoutToolbar(),
             ]),
 

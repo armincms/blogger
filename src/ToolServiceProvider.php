@@ -25,6 +25,7 @@ class ToolServiceProvider extends ServiceProvider
     public function servingNova()
     {
         LaravelNova::resources([
+            Nova\Page::class,
             Nova\Post::class,
             Nova\Video::class,
             Nova\Podcast::class,

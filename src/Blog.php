@@ -19,14 +19,11 @@ use Core\HttpSite\Component;
 
 class Blog extends Model implements HasMedia, Translatable, Authorizable
 {
-	use SoftDeletes, Authorization, InteractsWithTargomaan; 
+	use SoftDeletes, Authorization, InteractsWithTargomaan, IntractsWithMedia; 
     use Categorizable, Taggable, IntractsWithSite, HasPermalink, HasPublish;
     use Sluggable {
 		scopeFindSimilarSlugs as sluggableSimilarSlugs; 
-	}
-    use IntractsWithMedia {
-        getMedia as spatieGetMedia; 
-    }
+	} 
 
 	const LOCALE_KEY = 'language';
 
@@ -45,21 +42,6 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
 			],
 		]
 	];  
-
-    /**
-     * Get media collection by its collectionName.
-     *
-     * @param string $collectionName
-     * @param array|callable $filters
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function getMedia(string $collectionName = 'default', $filters = []): Collection
-    {
-        return $this->spatieGetMedia(
-            Str::before($collectionName, TargomaanField::Delimiter()), $filters
-        );
-    }
 
     /**
      * Return the sluggable configuration array for this model.
