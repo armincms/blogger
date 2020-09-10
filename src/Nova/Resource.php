@@ -91,11 +91,15 @@ abstract class Resource extends BaseResource
 
                 RadioButton::make(__('Mark As'), 'marked_as')
                     ->marginBetween() 
-                    ->options([
-                        'draft' => __('Draft'), 
-                        'publish' => __('Publish'),
-                        'pending' => __('Pending'), 
-                    ])
+                    ->options(
+                        collect([
+                            'draft' => __('Draft'), 
+                            'publish' => __('Publish'),
+                            'pending' => __('Pending'), 
+                        ])->filter(function($mark, $key) use ($request) {
+                            return $key !== 'publish' || $request->user()->can('publish', [$this->resource]);
+                        })->all()
+                    )
                     ->default('draft'), 
 
                 Text::make(__('Title'), 'title')
@@ -164,9 +168,12 @@ abstract class Resource extends BaseResource
                     ->default((string) now())
                     ->hideFromIndex(),
 
-                DateTime::make(__('Archive Date'), 'archive_date')
-                    ->nullable()
-                    ->hideFromIndex(), 
+                $this->when(
+                    $request->user()->can('archive', [$this->resource]), 
+                    DateTime::make(__('Archive Date'), 'archive_date')
+                        ->nullable()
+                        ->hideFromIndex()
+                ), 
             ]),
 
             new Panel(__('Media'), [

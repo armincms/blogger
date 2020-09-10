@@ -17,7 +17,8 @@ class ToolServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->registerWebComponents();
+        $this->configureWebComponents();
+        $this->configurePolicy();
 
         LaravelNova::serving([$this, 'servingNova']);
     }
@@ -41,7 +42,7 @@ class ToolServiceProvider extends ServiceProvider
         }); 
     }
 
-    public function registerWebComponents()
+    public function configureWebComponents()
     { 
         \Site::push('blog', function($blog) {
             $blog->directory('blog');
@@ -53,5 +54,10 @@ class ToolServiceProvider extends ServiceProvider
             $blog->pushComponent(new Components\Podcast);
             $blog->pushComponent(new Components\Category);
         });
+    }
+
+    public function configurePolicy()
+    { 
+        \Gate::policy(Blog::class, Policies\Blog::class);
     }
 }
