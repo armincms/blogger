@@ -57,6 +57,6 @@ trait HasPublish
      */
     public function getPublishVlaue()
     {
-        return static::PUBLISH_VALUE ?? 'published';
+        return defined('static::PUBLISH_VALUE') ? static::PUBLISH_VALUE : 'published';
     }
 }
