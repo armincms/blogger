@@ -88,4 +88,60 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
 	{
 		return 'sequential';
 	}
+
+    /**
+     * Query the model's `resource` attribute with the 'post' value.
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder $query  
+     * @return \Illuminate\Database\Eloquent\Builder       
+     */
+    public function scopePosts($query)
+    {
+        return $query->resource(Nova\Post::class);
+    }
+
+    /**
+     * Query the model's `resource` attribute with the 'article' value.
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder $query  
+     * @return \Illuminate\Database\Eloquent\Builder       
+     */
+    public function scopeArticles($query)
+    {
+        return $query->resource(Nova\Article::class);
+    } 
+
+    /**
+     * Query the model's `resource` attribute with the 'video' value.
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder $query  
+     * @return \Illuminate\Database\Eloquent\Builder       
+     */
+    public function scopeVideos($query)
+    {
+        return $query->resource(Nova\Video::class);
+    } 
+
+    /**
+     * Query the model's `resource` attribute with the 'podcast' value.
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder $query  
+     * @return \Illuminate\Database\Eloquent\Builder       
+     */
+    public function scopePodcasts($query)
+    {
+        return $query->resource(Nova\Podcast::class);
+    } 
+
+    /**
+     * Query the model's `resource` attribute with the given value.
+     * 
+     * @param  \Illuminate\Database\Eloquent\Builder $query  
+     * @param  string $resource  
+     * @return \Illuminate\Database\Eloquent\Builder       
+     */
+    public function scopeResource($query, $resource)
+    {
+        return $query->where($query->qualifyColumn('resource'), $resource);
+    }
 }
