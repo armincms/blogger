@@ -17,6 +17,7 @@ class ToolServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
         $this->configureWebComponents();
         $this->configurePolicy();
 
@@ -33,13 +34,7 @@ class ToolServiceProvider extends ServiceProvider
             Nova\Article::class,
             Nova\Category::class,
             Nova\Tag::class,
-        ]);
-
-        Collection::macro('filterForDetail', function($request, $resource) {
-            return $this->filter(function ($field) use ($resource, $request) {
-                return $field->isShownOnDetail($request, $resource);
-            })->values();
-        }); 
+        ]); 
     }
 
     public function configureWebComponents()

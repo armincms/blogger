@@ -20,7 +20,7 @@ abstract class Resource extends BaseResource
      *
      * @var string
      */
-    public static $model = 'Armincms\\Blogger\\Blog';
+    public static $model = \Armincms\Blogger\Blog::class;
 
     /**
      * The logical group associated with the resource.
