@@ -26,10 +26,9 @@ class Blog extends Component implements Resourceable
 
 	public function toHtml(Request $request, Document $docuemnt) : string
 	{       
-		$blog = Model::published()->where('url->'. app()->getLocale(), urlencode($request->relativeUrl()))->firstOrFail(); 
-
-		$this->resource($blog);  
-
+		$blog = Model::published()->whereUrl($request->relativeUrl())->firstOrFail(); 
+		
+		$this->resource($blog);   
 		$docuemnt->title(/*$blog->metaTitle()?:*/ $blog->title); 
 		
 		$docuemnt->description(/*$blog->metaDescription()?:*/ $blog->intro_text);   
