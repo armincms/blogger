@@ -26,35 +26,17 @@ class Blog extends Component implements Resourceable
 
 	public function toHtml(Request $request, Document $docuemnt) : string
 	{       
-		$blog = Model::whereHas('translates', function($q) use ($request) {   
-			$q
-				->where('url', 'LIKE', "%{$request->relativeUrl()}")
-				->where($q->qualifyColumn('language'), app()->getLocale());
-		})->whereType($this->type)->firstOrFail();
-
-		if(! $blog->isVisible()) {
-			abort(404, "404 Not Found Error ...!");
-		}
+		$blog = Model::published()->where('url->'. app()->getLocale(), urlencode($request->relativeUrl()))->firstOrFail(); 
 
 		$this->resource($blog);  
 
-		$docuemnt->title($blog->metaTitle()?: $blog->title); 
+		$docuemnt->title(/*$blog->metaTitle()?:*/ $blog->title); 
 		
-		$docuemnt->description($blog->metaDescription()?: $blog->intro_text);   
+		$docuemnt->description(/*$blog->metaDescription()?:*/ $blog->intro_text);   
 
 		return $this->firstLayout($docuemnt, $this->config('layout'), 'citadel')
 					->display($blog->toArray(), $docuemnt->component->config('layout', [])); 
 	}   
-
-	public function setComponentName(string $name)
-	{
-		$this->name = $name;
-		$this->type = $name;
-		$this->label = 'blog::title.'. str_plural($name);
-		$this->singularLabel = "blog::title.{$name}"; 
-
-		return $this;
-	}
 
 	public function image(string $schema)
 	{  
