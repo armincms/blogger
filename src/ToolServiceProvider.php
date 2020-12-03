@@ -4,6 +4,7 @@ namespace Armincms\Blogger;
  
 use Illuminate\Support\ServiceProvider; 
 use Illuminate\Support\Collection; 
+use Illuminate\Support\Str; 
 use CodencoDev\NovaGridSystem\NovaGridSystem;
 use Laravel\Nova\Nova as LaravelNova; 
 
@@ -19,6 +20,7 @@ class ToolServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
         $this->configureWebComponents();
+        $this->configureModules();
         $this->configurePolicy();
 
         LaravelNova::serving([$this, 'servingNova']);
@@ -26,8 +28,7 @@ class ToolServiceProvider extends ServiceProvider
 
     public function servingNova()
     {
-        LaravelNova::resources([
-            Nova\Page::class,
+        LaravelNova::resources([ 
             Nova\Post::class,
             Nova\Video::class,
             Nova\Podcast::class,
@@ -51,8 +52,34 @@ class ToolServiceProvider extends ServiceProvider
         });
     }
 
+    public function configureModules()
+    {    
+        \Config::set('module.locatables.blog', [
+            'title' => 'blog', 
+            'name'  => 'blog',
+            'items' => collect([
+                Nova\Post::class, Nova\Video::class, Nova\Podcast::class, Nova\Article::class
+            ])->map(function($resource) {
+                return [
+                    'title' => $resource::label(),
+                    'name' => Str::singular($resource::uriKey()),
+                    'id' => '*',
+                    'childrens' => $resource::newModel()->resource($resource)->get()->mapInto($resource)->map(function($resource) { 
+                        return [
+                            'title' => $resource->title() ?? $resource->getKey(), 
+                            'name' => Str::singular($resource::uriKey()),
+                            'id' => $resource->getKey(),
+                            'url'    => $resource->url(),
+                        ];
+                    })->toArray(),
+                ];
+            })->values()->toArray()
+        ]);   
+    }
+
     public function configurePolicy()
     { 
         \Gate::policy(Blog::class, Policies\Blog::class);
     }
+
 }

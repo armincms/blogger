@@ -105,6 +105,7 @@ abstract class Resource extends BaseResource
 
                 Text::make(__('Title'), 'title')
                     ->required()
+                    ->rules('required')
                     ->onlyOnForms(), 
 
                 $this->slugField(),
