@@ -93,15 +93,15 @@ abstract class Resource extends BaseResource
                     ->marginBetween() 
                     ->options(
                         collect([
-                            static::getDraftVlaue()   => __('Draft'), 
-                            static::getPublishVlaue() => __('Publish'),
-                            static::getPendingVlaue() => __('Pending'), 
+                            static::getDraftValue()   => __('Draft'), 
+                            static::getPublishValue() => __('Publish'),
+                            static::getPendingValue() => __('Pending'), 
                         ])->filter(function($mark, $key) use ($request) {
-                            return  $key !== static::getPublishVlaue() || 
+                            return  $key !== static::getPublishValue() || 
                                     $request->user()->can('publish', [$this->resource]);
                         })->all()
                     )
-                    ->default(static::getDraftVlaue()), 
+                    ->default(static::getDraftValue()), 
 
                 Text::make(__('Title'), 'title')
                     ->required()
