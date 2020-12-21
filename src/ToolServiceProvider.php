@@ -57,7 +57,13 @@ class ToolServiceProvider extends ServiceProvider
         \Config::set('module.locatables.blog', [
             'title' => 'blog', 
             'name'  => 'blog',
-            'items' => collect([
+            'items' => [static::class, 'moduleLocales']
+        ]);   
+    }
+
+    public function moduleLocales()
+    {
+        return collect([
                 Nova\Post::class, Nova\Video::class, Nova\Podcast::class, Nova\Article::class
             ])->map(function($resource) {
                 return [
@@ -73,8 +79,7 @@ class ToolServiceProvider extends ServiceProvider
                         ];
                     })->toArray(),
                 ];
-            })->values()->toArray()
-        ]);   
+            })->values()->toArray();
     }
 
     public function configurePolicy()
