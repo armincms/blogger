@@ -33,7 +33,7 @@ class Blog extends Component implements Resourceable
 		
 		$docuemnt->description(/*$blog->metaDescription()?:*/ $blog->intro_text);   
 
-		return $this->firstLayout($docuemnt, $this->config('layout'), 'citadel')
+		return $this->firstLayout($docuemnt, $this->config('layout'), 'clean-blog')
 					->display($blog->toArray(), $docuemnt->component->config('layout', [])); 
 	}   
 
@@ -50,5 +50,10 @@ class Blog extends Component implements Resourceable
 	public function author()
 	{
 		return $this->resource->owner;
+	}
+
+	public function featuredImage()
+	{
+		return $this->image('main');
 	}
 }
