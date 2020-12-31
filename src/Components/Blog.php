@@ -33,14 +33,9 @@ class Blog extends Component implements Resourceable
 		
 		$docuemnt->description(/*$blog->metaDescription()?:*/ $blog->intro_text);   
 
-		return $this->firstLayout($docuemnt, $this->config('layout'), 'clean-blog')
+		return (string) $this->firstLayout($docuemnt, $this->config('layout'), 'clean-blog')
 					->display($blog->toArray(), $docuemnt->component->config('layout', [])); 
-	}   
-
-	public function image(string $schema)
-	{  
-		return optional($this->resource->image)->get($schema) ?? schema_placeholder($schema);
-	}
+	}    
 
 	public function categories()
 	{
@@ -52,8 +47,8 @@ class Blog extends Component implements Resourceable
 		return $this->resource->owner;
 	}
 
-	public function featuredImage()
+	public function featuredImage($schema = 'main')
 	{
-		return $this->image('main');
+		return $this->resource->featuredImage($schema);
 	}
 }

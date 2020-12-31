@@ -144,4 +144,16 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
     {
         return $query->where($query->qualifyColumn('resource'), $resource);
     }
+
+    public function featuredImage(string $schema = 'main')
+    {
+        return $this->featuredImages()->get($schema);
+    }
+
+    public function featuredImages()
+    {
+        return $this->getConversions(
+            $this->getFirstMedia('image'), config('blog.schemas', ['main', 'thumbnail'])
+        );
+    }
 }
