@@ -21,6 +21,7 @@ class ToolServiceProvider extends ServiceProvider
         $this->configureWebComponents();
         $this->configureModules();
         $this->configurePolicy();
+        $this->servingNova();
 
         LaravelNova::serving([$this, 'servingNova']);
     }
@@ -32,8 +33,6 @@ class ToolServiceProvider extends ServiceProvider
             Nova\Video::class,
             Nova\Podcast::class,
             Nova\Article::class,
-            Nova\Category::class,
-            Nova\Tag::class,
         ]); 
     }
 
@@ -41,13 +40,11 @@ class ToolServiceProvider extends ServiceProvider
     { 
         \Site::push('blog', function($blog) {
             $blog->directory('blog');
-
-            $blog->pushComponent(new Components\Tag);
+ 
             $blog->pushComponent(new Components\Post);
             $blog->pushComponent(new Components\Video);
             $blog->pushComponent(new Components\Article);
-            $blog->pushComponent(new Components\Podcast);
-            $blog->pushComponent(new Components\Category);
+            $blog->pushComponent(new Components\Podcast); 
         });
     }
 

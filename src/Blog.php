@@ -5,27 +5,37 @@ namespace Armincms\Blogger;
 use Illuminate\Support\Str; 
 use Illuminate\Support\Collection; 
 use Illuminate\Database\Eloquent\{Model, Builder, SoftDeletes}; 
-use Armincms\Concerns\{IntractsWithMedia, Authorization};
-use Armincms\Contracts\Authorizable;
+use Armincms\Concerns\{IntractsWithMedia, Authorization, InteractsWithLayouts};
+use Armincms\Contracts\{Authorizable, HasLayout};
 use Armincms\Targomaan\Concerns\InteractsWithTargomaan;
 use Armincms\Targomaan\Contracts\Translatable;
 use Armincms\Fields\TargomaanField;
-use Armincms\Categorizable\Categorizable;
-use Armincms\Taggable\Taggable;
+use Armincms\Categorizable\Contracts\Categorizable;
+use Armincms\Categorizable\Concerns\InteractsWithCategories;
+use Armincms\Taggable\Contracts\Taggable;
+use Armincms\Taggable\Concerns\InteractsWithTags;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Core\HttpSite\Concerns\{IntractsWithSite, HasPermalink}; 
-use Core\HttpSite\Component;    
+use Core\HttpSite\Component;       
 
-class Blog extends Model implements HasMedia, Translatable, Authorizable
+class Blog extends Model implements HasMedia, Translatable, Authorizable, Categorizable, Taggable, HasLayout
 {
-	use SoftDeletes, Authorization, InteractsWithTargomaan, IntractsWithMedia; 
-    use Categorizable, Taggable, IntractsWithSite, HasPermalink, HasPublish;
+	use SoftDeletes, Authorization, InteractsWithTargomaan, IntractsWithMedia, InteractsWithLayouts; 
+    use InteractsWithCategories, InteractsWithTags, IntractsWithSite, HasPermalink, HasPublish;
     use Sluggable {
 		scopeFindSimilarSlugs as sluggableSimilarSlugs; 
 	} 
 
 	const LOCALE_KEY = 'language';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'blogs';
+
 
 	protected $casts = [
 		'seo' => 'json',
@@ -148,6 +158,16 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable
     public function featuredImage(string $schema = 'main')
     {
         return $this->featuredImages()->get($schema);
+    }
+
+    /**
+     * Get the class name for polymorphic relations.
+     *
+     * @return string
+     */
+    public function getMorphClass()
+    {
+        return self::class;
     }
 
     public function featuredImages()

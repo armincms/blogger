@@ -7,6 +7,8 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel; 
 use Laravel\Nova\Fields\{ID, Text, Textarea, Number, Password, DateTime}; 
 use Armincms\Nova\Resource as BaseResource;
+use Armincms\Taggable\Nova\Fields\Tags;
+use Armincms\Categorizable\Nova\Category;
 use Armincms\Fields\{Targomaan, BelongsToMany};
 use Whitecube\NovaFlexibleContent\Flexible;
 use Outhebox\NovaHiddenField\HiddenField;
@@ -141,13 +143,12 @@ abstract class Resource extends BaseResource
                 ]) 
             ), 
 
-            $this->when($this->hasSource(),Url::make(__('Source'), 'source')->required()), 
+            $this->when($this->hasSource(), Url::make(__('Source'), 'source')->required()), 
 
             BelongsToMany::make(__('Categories'), 'categories', Category::class)
                 ->hideFromIndex(),
 
-            BelongsToMany::make(__('Tags'), 'tags', Tag::class)
-                ->hideFromIndex(), 
+            Tags::make(__('Tags')), 
 
             (new Targomaan([ 
                 $this->abstractField(), 
