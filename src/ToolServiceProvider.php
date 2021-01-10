@@ -23,7 +23,7 @@ class ToolServiceProvider extends ServiceProvider
         $this->configurePolicy();
         $this->servingNova();
 
-        LaravelNova::serving([$this, 'servingNova']);
+        LaravelNova::serving([$this, 'servingNova']); 
     }
 
     public function servingNova()
@@ -33,6 +33,7 @@ class ToolServiceProvider extends ServiceProvider
             Nova\Video::class,
             Nova\Podcast::class,
             Nova\Article::class,
+            Nova\Category::class,
         ]); 
     }
 
@@ -45,6 +46,7 @@ class ToolServiceProvider extends ServiceProvider
             $blog->pushComponent(new Components\Video);
             $blog->pushComponent(new Components\Article);
             $blog->pushComponent(new Components\Podcast); 
+            $blog->pushComponent(new Components\Category); 
         });
     }
 

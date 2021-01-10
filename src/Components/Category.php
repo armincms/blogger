@@ -1,46 +1,20 @@
 <?php 
+
 namespace Armincms\Blogger\Components;
- 
+  
 use Illuminate\Http\Request; 
-use Core\HttpSite\Component;
-use Core\Document\Document; 
-use Core\HttpSite\Contracts\Resourceable;
-use Core\HttpSite\Concerns\IntractsWithResource;
-use Core\HttpSite\Concerns\IntractsWithLayout;
-use Armincms\Categorizable\Category as Model;
+use Armincms\Categorizable\Components\Category as Component;
 
-class Category extends Component implements Resourceable
-{       
-	use IntractsWithResource, IntractsWithLayout;
-
+class Category extends Component 
+{     
 	/**
-	 * Route Conditions of section
+	 * Get the resource query builder.
 	 * 
-	 * @var null
+	 * @param  Request $request 
+	 * @return \Illuminate\Database\Elqoeunt\Model           
 	 */
-	protected $wheres = [ 
-		'id'	=> '[0-9]+'
-	];   
-
-	public function toHtml(Request $request, Document $docuemnt) : string
-	{       
-		$category = Category::whereHas('translates', function($q) use ($request) {   
-			$q
-				->where('url', 'LIKE', "%{$request->relativeUrl()}")
-				->where($q->qualifyColumn('language'), app()->getLocale());
-		})->firstOrFail();
-
-		if(! $category->isVisible()) {
-			abort(404, "404 Not Found Error ...!");
-		}
-
-		$this->resource($category);  
-
-		$docuemnt->title($category->metaTitle()?: $category->title); 
-		
-		$docuemnt->description($category->metaDescription()?: $category->intro_text);   
-
-		return $this->firstLayout($docuemnt, $this->config('layout'), 'citadel')
-					->display($category->toArray(), $docuemnt->component->config('layout', [])); 
-	}    
+	public function newModel(Request $request)
+	{
+		return new \Armincms\Blogger\Models\Category;
+	}
 }

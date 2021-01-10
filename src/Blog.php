@@ -170,6 +170,16 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable, Catego
         return self::class;
     }
 
+    /**
+     * Query the related categories.
+     * 
+     * @return \Illuminate\Database\Eloqenut\Relations\BelongsToMany
+     */
+    public function categories() 
+    {
+        return $this->morphToMany(Models\Category::class, 'categorizable', 'categorizable');
+    }
+
     public function featuredImages()
     {
         return $this->getConversions(

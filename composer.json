@@ -11,7 +11,7 @@
         "armincms/armincms": "~0.2",
         "armincms/taggable": "~0.1",
         "armincms/nova-targomaan": "~0.1",
-        "armincms/categorizable": "~0.1",
+        "armincms/categorizable": "1.*",
         "armincms/taggable": "~0.1",
         "armincms/home": "~0.1",
         "zareismail/markable": "~0.1", 
