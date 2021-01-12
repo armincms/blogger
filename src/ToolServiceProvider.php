@@ -21,6 +21,7 @@ class ToolServiceProvider extends ServiceProvider
         $this->configureWebComponents();
         $this->configureModules();
         $this->configurePolicy();
+        $this->configureMenus();
         $this->servingNova();
 
         LaravelNova::serving([$this, 'servingNova']); 
@@ -56,6 +57,14 @@ class ToolServiceProvider extends ServiceProvider
             'title' => 'blog', 
             'name'  => 'blog',
             'items' => [Locate::class, 'moduleLocales']
+        ]);   
+    }
+
+    public function configureMenus()
+    {     
+        \Config::set('menu.menuables.blog', [
+            'title' => 'Category',
+            'callback' => [Locate::class, 'categoryLocates'],
         ]);   
     }
 

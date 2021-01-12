@@ -28,7 +28,11 @@ class Locate
                 'title' => Nova\Category::label(),
                 'name'  => 'category',
                 'id'    => '*',
-                'childrens' => Nova\Category::newModel()->whereDoesntHave('parent')->with('subCategories')->get()->mapInto(Nova\Category::class)->map([static::class, 'categoryInformation'])->toArray()
+                'childrens' => Nova\Category::newModel()
+                                    ->whereDoesntHave('parent')->with('subCategories')->get()
+                                    ->mapInto(Nova\Category::class)
+                                    ->map([static::class, 'categoryInformation'])
+                                    ->toArray()
             ])->values()->toArray();
     }
 
@@ -45,5 +49,34 @@ class Locate
             'childrens' => $childrens->isEmpty() ? null : $childrens->all(),
             'url'   => app('site')->get('blog')->url(urldecode($category->url)),
         ]);
+    }
+
+    public static function categoryLocates()
+    {
+        return Nova\Category::newModel() 
+                    ->whereDoesntHave('parent')
+                    ->with([
+                        'subCategories' => function($query) {
+                            $query->published();
+                        }
+                    ])
+                    ->get()
+                    ->mapInto(Nova\Category::class)
+                    ->map([static::class, 'menuInfotmation'])
+                    ->toArray();
+    } 
+
+    public static function menuInfotmation($category)
+    {
+        return [
+            'id'    => $category->id,
+            'title' => $category->title(), 
+            'active'=> $category->isPublished(),
+            'url'   => app('site')->get('blog')->url(urldecode($category->url)),
+            'childs'=> $category->subCategories->mapInto(Nova\Category::class)->map([
+                static::class, 'menuInfotmation'
+            ])->toArray()
+        ];
+
     }
 }
