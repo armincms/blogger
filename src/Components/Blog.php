@@ -29,9 +29,10 @@ class Blog extends Component implements Resourceable
 		$blog = Model::published()->whereUrl($request->relativeUrl())->firstOrFail(); 
 		
 		$this->resource($blog);   
-		$docuemnt->title(/*$blog->metaTitle()?:*/ $blog->title); 
+		$docuemnt->title($blog->metaTitle()?: $blog->title); 
 		
-		$docuemnt->description(/*$blog->metaDescription()?:*/ $blog->intro_text);   
+		$docuemnt->description($blog->metaDescription()?: $blog->intro_text);   
+		$docuemnt->keywords($blog->getMeta('keywords')?: $blog->tags->map->tag->implode(','));  
 
 		return (string) $this->firstLayout($docuemnt, $this->config('layout'), 'clean-blog')
 					->display($blog->toArray(), $docuemnt->component->config('layout', [])); 

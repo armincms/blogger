@@ -17,12 +17,14 @@ use Armincms\Taggable\Concerns\InteractsWithTags;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Core\HttpSite\Concerns\{IntractsWithSite, HasPermalink}; 
+use Core\Crud\Concerns\SearchEngineOptimizeTrait;
 use Core\HttpSite\Component;       
 
 class Blog extends Model implements HasMedia, Translatable, Authorizable, Categorizable, Taggable, HasLayout
 {
 	use SoftDeletes, Authorization, InteractsWithTargomaan, IntractsWithMedia, InteractsWithLayouts; 
     use InteractsWithCategories, InteractsWithTags, IntractsWithSite, HasPermalink, HasPublish;
+    use SearchEngineOptimizeTrait;
     use Sluggable {
 		scopeFindSimilarSlugs as sluggableSimilarSlugs; 
 	} 
