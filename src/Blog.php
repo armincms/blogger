@@ -60,7 +60,7 @@ class Blog extends Model implements HasMedia, Translatable, Authorizable, Catego
      *
      * @return array
      */
-    public function sluggable()
+    public function sluggable(): array
     {
         return [
             'slug' => [
