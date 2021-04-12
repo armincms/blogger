@@ -147,7 +147,8 @@ abstract class Resource extends BaseResource
             BelongsToMany::make(__('Categories'), 'categories', Category::class)
                 ->hideFromIndex(),
 
-            Tags::make(__('Tags')), 
+            Tags::make(__('Tags'), 'tags')
+                ->hideFromIndex(), 
 
             (new Targomaan([ 
                 $this->abstractField(), 
