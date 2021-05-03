@@ -47,7 +47,7 @@ class Locate
             'name'  => Str::kebab(class_basename($category::$model)),
             'id'    => $category->getKey(),
             'childrens' => $childrens->isEmpty() ? null : $childrens->all(),
-            'url'   => app('site')->get('blog')->url(urldecode($category->url)),
+            'url'   => $category->url(),
         ]);
     }
 
@@ -72,7 +72,7 @@ class Locate
             'id'    => $category->id,
             'title' => $category->title(), 
             'active'=> $category->isPublished(),
-            'url'   => app('site')->get('blog')->url(urldecode($category->url)),
+            'url'   => $category->url(),
             'childs'=> $category->subCategories->mapInto(Nova\Category::class)->map([
                 static::class, 'menuInfotmation'
             ])->toArray()
