@@ -2,26 +2,33 @@
 
 namespace Armincms\Blogger\Nova;
 
+use Armincms\Contract\Nova\Authorizable;
+use Armincms\Contract\Nova\Fields;
+use Armincms\Fields\Targomaan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Laravel\Nova\Fields\Badge;
+use Laravel\Nova\Fields\Hidden;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Panel; 
-use Laravel\Nova\Fields\{ID, Text, Textarea, Number, Password, DateTime}; 
-use Armincms\Nova\Resource as BaseResource;
-use Armincms\Taggable\Nova\Fields\Tags; 
-use Armincms\Fields\{Targomaan, BelongsToMany};
-use Whitecube\NovaFlexibleContent\Flexible;
-use Outhebox\NovaHiddenField\HiddenField;
-use OwenMelbz\RadioField\RadioButton;
-use Inspheric\Fields\Url;
+use Laravel\Nova\Panel;
+use Laravel\Nova\Resource as NovaResource; 
 
-abstract class Resource extends BaseResource
-{
+abstract class Resource extends NovaResource
+{ 
+    use Authorizable;
+    use Fields;
+
     /**
-     * The model the resource corresponds to.
+     * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $model = \Armincms\Blogger\Blog::class;
+    public static $title = 'name';
 
     /**
      * The logical group associated with the resource.
@@ -31,34 +38,13 @@ abstract class Resource extends BaseResource
     public static $group = 'Blog';
 
     /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @var string
-     */
-    public static $title = 'title';
-
-    /**
      * The columns that should be searched.
      *
      * @var array
      */
     public static $search = [
-        'id', 'title'
+        'id', 'name'
     ];
-
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        return $query
-                    ->where('language', app()->getLocale())
-                    ->where('resource', static::class);
-    }
 
     /**
      * Get the fields displayed by the resource.
@@ -69,198 +55,184 @@ abstract class Resource extends BaseResource
     public function fields(Request $request)
     {
         return [
-            ID::make()->sortable(),  
+            ID::make(__(static::resourceName(). ' ID'), 'id')->sortable(),
 
-            new Targomaan([ 
-
-                Url::make(__('Title'), 'url')
-                    ->exceptOnForms()
-                    ->alwaysClickable() 
-                    ->resolveUsing(function($value, $resource, $attribute) {
-                        return $this->site()->url(urldecode($value));
-                    })
-                    ->titleUsing(function($value, $resource) {
-                        return $this->title;
-                    }) 
-                    ->labelUsing(function($value, $resource) {
-                        return $this->title;
-                    }),
-                
-                HiddenField::make('resource')
-                    ->defaultValue(static::class)
-                    ->onlyOnForms(),
-
-                RadioButton::make(__('Mark As'), 'marked_as')
-                    ->marginBetween() 
-                    ->options(
-                        collect([
-                            static::getDraftValue()   => __('Draft'), 
-                            static::getPublishValue() => __('Publish'),
-                            static::getPendingValue() => __('Pending'), 
-                        ])->filter(function($mark, $key) use ($request) {
-                            return  $key !== static::getPublishValue() || 
-                                    $request->user()->can('publish', [$this->resource]);
-                        })->all()
-                    )
-                    ->default(static::getDraftValue()), 
-
-                Text::make(__('Title'), 'title')
+            Targomaan::make([ 
+                Select::make(__(static::resourceName(). ' Status'), 'marked_as')
+                    ->options($this->statuses($request))
                     ->required()
                     ->rules('required')
-                    ->onlyOnForms(), 
+                    ->default('draft'),
 
-                $this->slugField(),
+                Text::make(__(static::resourceName(). ' Name'), 'name')
+                    ->required()
+                    ->rules('required'),
 
-                Url::make('URL')
-                    ->alwaysClickable()
-                    ->hideWhenCreating()
+                Text::make(__(static::resourceName(). ' Slug'), 'slug')
+                    ->nullable(), 
+                
+                Text::make(__(static::resourceName(). ' Source URL'), 'source')
+                    ->required()
+                    ->rules('required', 'url')
+                    ->canSee(function($request) {
+                        return static::hasSource($request);
+                    }),
+
+                $this->resourceImage(__(static::resourceName(). ' Featured Image')),
+
+                Textarea::make(__(static::resourceName(). ' Summary'), 'summary')
+                    ->nullable(),
+
+                $this->resourceEditor(__(static::resourceName(). ' Content'), 'content'),
+
+                Hidden::make('resource')
+                    ->default(get_called_class())
                     ->onlyOnForms()
-                    ->readOnly()
-                    ->resolveUsing(function($value, $resource, $attribute) {
-                        return $this->site()->url(urldecode($value));
-                    })
-                    ->fillUsing(function() {}),
+                    ->hideWhenUpdating(),
+            ]), 
 
-
-                Number::make(__('Hits'), 'hits')
-                    ->exceptOnForms(),
-            ]),
-
-            $this->when(static::class === Article::class, Flexible::make(__('References'), 'source')
-                ->collapsed()
-                ->hideFromIndex()
-                ->button(__('Add Reference'))
-                ->addLayout(__('Source'), 'source', [
-                    Text::make(__('Title'), 'title')
-                        ->required(),
-
-                    Text::make(__('Author'), 'author')
-                        ->required(),
-
-                    Url::make(__('Source'), 'source')
-                        ->required(),
-                ]) 
-            ), 
-
-            $this->when($this->hasSource(), Url::make(__('Source'), 'source')->required()), 
-
-            BelongsToMany::make(__('Categories'), 'categories', Category::class)
-                ->hideFromIndex(),
-
-            Tags::make(__('Tags'), 'tags')
-                ->hideFromIndex(), 
-
-            (new Targomaan([ 
-                $this->abstractField(), 
-
-                $this->gutenbergField(), 
-            ]))->withoutToolbar(),
-
-            new Panel(__('Advanced'), [
-                new Targomaan([
-                    $this->seoField()
-                        ->hideFromIndex(),
+            Panel::make(__('Advanced ' .static::resourceName(). ' Configurations'), [
+                Targomaan::make([
+                    $this->resourceMeta(__(static::resourceName(). ' Meta')),
                 ]),
-
-                Password::make(__('Password'), 'password')
-                    ->nullable()
-                    ->hideFromIndex(),
-
-                DateTime::make(__('Publish Date'), 'publish_date')
-                    ->nullable()
-                    ->default((string) now())
-                    ->hideFromIndex(),
-
-                $this->when(
-                    $request->user()->can('archive', [$this->resource]), 
-                    DateTime::make(__('Archive Date'), 'archive_date')
-                        ->nullable()
-                        ->hideFromIndex()
-                ), 
             ]),
-
-            new Panel(__('Media'), [
-                (new Targomaan([
-                    $this->imageField(),
-                ]))->withoutToolbar(),
-            ]),
-
-            $this->when($request->isMethod('put') || $request->isMethod('post'),     
-                Text::make('async')->fillUsing(function($request, $model) {  
-                    $model::saved(function($saved) use ($model) { 
-                        if($saved->is($model)) { 
-                            $categories = $model->categories()->get();
-                            $tags = $model->tags()->get(); 
-
-                            $model->translations()->get()->each(function($trans) use ($model, $categories, $tags) {
-                                $trans->categories()->sync($categories);
-                                $trans->tags()->sync($tags);
-                            });  
-                        }
-                    });
-                }),
-            ),
         ];
     }
 
     /**
-     * Get a fresh instance of the model represented by the resource.
-     *
-     * @return mixed
-     */
-    public static function newModel()
-    { 
-        return with(parent::newModel(), function($model) {
-            return $model->forceFill(['resource' => class_basename(static::class)]);
-        });
-    } 
-
-    public function hasSource()
-    {
-        return in_array(static::class, [Video::class, Podcast::class]);
-    }
-
-    /**
-     * Get the cards available for the request.
+     * Get the fields displayed by the resource.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function cards(Request $request)
+    public function fieldsForIndex(Request $request)
     {
-        return [];
+        $model = static::newModel();
+
+        return [
+            ID::make(__(static::resourceName(). ' ID'), 'id')->sortable(), 
+
+            Text::make(__(static::resourceName(). ' Name'), 'name'), 
+
+            $this->resourceUrls(),
+
+            Badge::make(__(static::resourceName(). ' Status'), 'marked_as')
+                ->map([
+                    $model->getPublishValue() => 'success',
+                    $model->getDraftValue()   => 'info',
+                    $model->getArchiveValue() => 'warning',
+                    $model->getPendingValue() => 'danger',
+                ])
+                ->labels([
+                    $model->getPublishValue() => __($model->getPublishValue()),
+                    $model->getDraftValue()   => __($model->getDraftValue()),
+                    $model->getArchiveValue() => __($model->getArchiveValue()),
+                    $model->getPendingValue() => __($model->getPendingValue()),
+                ]),
+        ];
     }
 
     /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * Get the page statuses.
+     * 
+     * @param  Request $request 
+     * @return array           
      */
-    public function filters(Request $request)
+    public function statuses(Request $request)
     {
-        return [];
+        $model = static::newModel();
+
+        return $this->filter([
+            $model->getDraftValue() => __('Store ' .Str::lower(static::resourceName()). ' as draft'),
+
+            $this->mergeWhen($request->user()->can('publish', $model), function() use ($model) {
+                return [
+                    $model->getPublishValue() => __('Publish the '.Str::lower(static::resourceName())),
+                ];
+            }, function() {
+                return [
+                    $model->getPendingValue() => __(
+                        'Request ' .Str::lower(static::resourceName()). ' publishing'
+                    ),
+                ];
+            }),
+
+            $this->mergeWhen($request->user()->can('archive', $model), function() use ($model) {
+                return [
+                    $model->getArchiveValue() => __('Archive the '.Str::lower(static::resourceName())),
+                ];
+            }), 
+        ]);
     }
 
     /**
-     * Get the lenses available for the resource.
+     * Get the name of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @return string
      */
-    public function lenses(Request $request)
+    protected static function resourceName()
     {
-        return [];
+        return Str::title(Str::snake(class_basename(get_called_class()), ' '));
     }
 
     /**
-     * Get the actions available for the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * Determine if resource nedd source.
+     * 
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return boolean         
      */
-    public function actions(Request $request)
+    public function hasSource($request)
     {
-        return [];
+        return in_array(static::class, [Video::class, Article::class, Podcast::class]);
+    }
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return $query->localize();
+    }
+
+    /**
+     * Build a Scout search query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Laravel\Scout\Builder  $query
+     * @return \Laravel\Scout\Builder
+     */
+    public static function scoutQuery(NovaRequest $request, $query)
+    {
+        return $query;
+    }
+
+    /**
+     * Build a "detail" query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function detailQuery(NovaRequest $request, $query)
+    {
+        return parent::detailQuery($request, $query);
+    }
+
+    /**
+     * Build a "relatable" query for the given resource.
+     *
+     * This query determines which instances of the model may be attached to other resources.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function relatableQuery(NovaRequest $request, $query)
+    {
+        return parent::relatableQuery($request, $query);
     }
 }

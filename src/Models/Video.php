@@ -1,22 +1,24 @@
 <?php
 
-namespace Armincms\Blogger\Models;
-
-use Armincms\Blogger\Blog;   
+namespace Armincms\Blogger\Models; 
 
 class Video extends Blog  
-{  
+{   
     /**
-     * The "booting" method of the model.
-     *
-     * @return void
+     * Get the available media collections.
+     * 
+     * @return array
      */
-    public static function boot()
+    public function getMediaCollections(): array
     {
-        parent::boot();
-
-        static::addGlobalScope(function($query) {
-        	$query->resource(\Armincms\Blogger\Nova\Video::class);
-        });
+        return [
+            'image' => [
+                'conversions' => ['video'],
+                'multiple'  => false,
+                'disk'      => 'image',
+                'limit'     => 20, // count of images
+                'accepts'   => ['image/jpeg', 'image/jpg', 'image/png'],
+            ],
+        ];
     }
 }

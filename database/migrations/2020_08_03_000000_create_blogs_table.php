@@ -14,15 +14,13 @@ class CreateBlogsTable extends Migration
     public function up()
     {
         Schema::create('blogs', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->description('title'); 
-            $table->string('marked_as')->default('draft');
+            $table->id();
+            $table->multilingualContent(); 
+            $table->markable(); 
             $table->string('resource')->default(\Armincms\Blogger\Nova\Post::class);
             $table->string('password')->nullable();
-            $table->json('source')->nullable();
-            $table->string('sequence_key')->nullable();
-            $table->auth();
-            $table->hits();
+            $table->string('source', 500)->nullable();
+            $table->multilingualRefer(); 
             $table->timestamps();
             $table->softDeletes();
             $table->timestamp('publish_date')->nullable(); 

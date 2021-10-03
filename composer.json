@@ -2,20 +2,15 @@
     "name": "armincms/blogger",
     "description": "A Laravel Nova tool.",
     "keywords": [
-        "laravel",
-        "nova"
+        "armincms"
     ],
     "license": "MIT",
-    "require": {
-        "php": ">=7.1.0",
-        "armincms/armincms": "~0.2",
-        "armincms/taggable": "1.*",
-        "armincms/nova-targomaan": "~0.1",
-        "armincms/categorizable": "1.*", 
-        "armincms/home": "~0.1",
-        "zareismail/markable": "~0.1", 
-        "whitecube/nova-flexible-content": "~0.1",
-        "outhebox/nova-hidden-field": "~1.0" 
+    "require": {  
+        "armincms/categorizable": "2.*", 
+        "armincms/nova-targomaan": "~1.0",
+        "armincms/taggable": "2.*", 
+        "armincms/markable": "~0.1", 
+        "whitecube/nova-flexible-content": "~0.1"
     },
     "autoload": {
         "psr-4": {
@@ -25,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Armincms\\Blogger\\ToolServiceProvider"
+                "Armincms\\Blogger\\ServiceProvider"
             ]
         }
     },
@@ -33,5 +28,6 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "version": "2.0.0"
 }
