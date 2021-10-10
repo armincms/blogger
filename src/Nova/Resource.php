@@ -2,9 +2,11 @@
 
 namespace Armincms\Blogger\Nova;
 
+use Armincms\Blogger\Nova\Fields\Category;
 use Armincms\Contract\Nova\Authorizable;
 use Armincms\Contract\Nova\Fields;
 use Armincms\Fields\Targomaan;
+use Armincms\Taggable\Nova\Fields\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Nova\Fields\Badge;
@@ -16,7 +18,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
-use Laravel\Nova\Resource as NovaResource; 
+use Laravel\Nova\Resource as NovaResource;  
 
 abstract class Resource extends NovaResource
 { 
@@ -44,7 +46,7 @@ abstract class Resource extends NovaResource
      */
     public static $search = [
         'id', 'name'
-    ];
+    ]; 
 
     /**
      * Get the fields displayed by the resource.
@@ -78,6 +80,12 @@ abstract class Resource extends NovaResource
                         return static::hasSource($request);
                     }),
 
+                Category::make(__(static::resourceName(). ' Categories'))
+                    ->required()
+                    ->rules('required'),
+                
+                // Tag::make(__(static::resourceName(). ' Tags')),
+
                 $this->resourceImage(__(static::resourceName(). ' Featured Image')),
 
                 Textarea::make(__(static::resourceName(). ' Summary'), 'summary')
@@ -85,10 +93,9 @@ abstract class Resource extends NovaResource
 
                 $this->resourceEditor(__(static::resourceName(). ' Content'), 'content'),
 
-                Hidden::make('resource')
-                    ->default(get_called_class())
+                Hidden::make('resource')  
                     ->onlyOnForms()
-                    ->hideWhenUpdating(),
+                    ->withMeta(['value' => get_called_class()]),
             ]), 
 
             Panel::make(__('Advanced ' .static::resourceName(). ' Configurations'), [
