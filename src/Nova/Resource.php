@@ -84,7 +84,15 @@ abstract class Resource extends NovaResource
                     ->required()
                     ->rules('required'),
                 
-                // Tag::make(__(static::resourceName(). ' Tags')),
+                Tag::make(__(static::resourceName(). ' Tags'), function($value, $resource, $attribute) {
+                    $locale = explode('::', $attribute)[1];
+
+                    if ($this->locale != $locale) {
+                        $value = data_get($resource->translations->firstWhere('locale', $locale), 'queued_tags');
+                    }
+
+                    return $value;
+                }),
 
                 $this->resourceImage(__(static::resourceName(). ' Featured Image')),
 
