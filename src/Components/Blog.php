@@ -23,7 +23,7 @@ class Blog extends Component implements Resourceable
 
 	public function defaultRoute()
 	{
-		return $this->name() .'/{slug}';
+		return '{slug}';
 	}
 
 	private $type = null;
