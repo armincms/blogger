@@ -18,9 +18,13 @@ class Blog extends Component implements Resourceable
 	 * 
 	 * @var null
 	 */
-	protected $wheres = [ 
-		'id'	=> '[0-9]+'
+	protected $wheres = [  
 	];  
+
+	public function defaultRoute()
+	{
+		return $this->name() .'/{alias}';
+	}
 
 	private $type = null;
 
