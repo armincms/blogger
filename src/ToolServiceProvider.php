@@ -43,11 +43,11 @@ class ToolServiceProvider extends ServiceProvider
         \Site::push('blog', function($blog) {
             $blog->directory('blog');
  
+            $blog->pushComponent(new Components\Category); 
             $blog->pushComponent(new Components\Post);
             $blog->pushComponent(new Components\Video);
             $blog->pushComponent(new Components\Article);
             $blog->pushComponent(new Components\Podcast); 
-            $blog->pushComponent(new Components\Category); 
         });
     }
 
