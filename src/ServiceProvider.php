@@ -112,6 +112,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
     protected function widgets()
     {   
         Gutenberg::widgets([
+            Cypress\Widgets\BlogArchive::class,
             Cypress\Widgets\BlogCategory::class,
             Cypress\Widgets\BlogTag::class,
             Cypress\Widgets\SingleArticle::class,
@@ -129,10 +130,12 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
     protected function templates()
     {   
         Gutenberg::templates([
+            \Armincms\Blogger\Gutenberg\Templates\BlogArchive::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexArticle::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexPodcast::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexPost::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexVideo::class,
+            \Armincms\Blogger\Gutenberg\Templates\PaginateBlog::class,
             \Armincms\Blogger\Gutenberg\Templates\SingleArticle::class,
             \Armincms\Blogger\Gutenberg\Templates\SinglePodcast::class,
             \Armincms\Blogger\Gutenberg\Templates\SinglePost::class,
