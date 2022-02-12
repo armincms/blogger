@@ -2,16 +2,13 @@
 
 namespace Armincms\Blogger\Cypress\Widgets;
  
-use Laravel\Nova\Fields\Select;
-use Zareismail\Cypress\Widget;  
+use Laravel\Nova\Fields\Select; 
 use Zareismail\Cypress\Http\Requests\CypressRequest;
 use Zareismail\Gutenberg\Gutenberg;
-use Zareismail\Gutenberg\HasTemplate;
+use Zareismail\Gutenberg\GutenbergWidget;
 
-abstract class Single extends Widget
-{       
-    use HasTemplate;
-
+abstract class Single extends GutenbergWidget
+{      
     /**
      * Indicates if the widget should be shown on the component page.
      *
@@ -28,34 +25,22 @@ abstract class Single extends Widget
      */
     public function boot(CypressRequest $request, $layout)
     {   
-        $this->bootstrapTemplate($request, $layout);
+        parent::boot(); 
 
         $this->withMeta([
             'resource' => $request->resolveFragment()->metaValue('resource')
         ]);
-    }
-
-    /**
-     * Get the template id.
-     * 
-     * @return integer
-     */
-    public function getTemplateId(): int
-    {
-        return $this->metaValue('template');
     } 
 
     /**
-     * Serialize the widget fro template.
+     * Serialize the widget fro display.
      * 
      * @return array
      */
-    public function serializeForTemplate(): array
-    {
-        $request = $this->getRequest();
-
-        return $request->resolveFragment()->metaValue('resource')->serializeForWidget($request);
-    }
+    public function serializeForDisplay(): array
+    { 
+        return (array) optional($this->metaValue('resource'))->serializeForWidget($this->getRequest());
+    } 
 
     /**
      * Get the fields displayed by the resource.
@@ -65,19 +50,16 @@ abstract class Single extends Widget
      */
     public static function fields($request)
     {
-        return [
-            Select::make(__('Display Blog Template'), 'config->template')
-                ->options(static::availableTemplates(static::templateName()))
-                ->displayUsingLabels()
-                ->required()
-                ->rules('required'),
-        ];
-    }
+        return [];
+    } 
 
     /**
-     * Get the template name.
+     * Query related display templates.
      * 
      * @return string
      */
-    abstract public static function templateName(): string;
+    public static function relatableTemplates($request, $query)
+    {
+        return $query->handledBy('Armincms\\Blogger\\Gutenberg\\Templates\\' . class_basename(static::class));
+    }
 }
