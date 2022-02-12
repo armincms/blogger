@@ -25,7 +25,7 @@ abstract class Single extends GutenbergWidget
      */
     public function boot(CypressRequest $request, $layout)
     {   
-        parent::boot(); 
+        parent::boot($request, $layout); 
 
         $this->withMeta([
             'resource' => $request->resolveFragment()->metaValue('resource')
