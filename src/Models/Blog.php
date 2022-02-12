@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model; 
 use Illuminate\Database\Eloquent\SoftDeletes; 
 
-abstract class Blog extends Model implements Authenticatable, HasMedia, HasMeta
+class Blog extends Model implements Authenticatable, HasMedia, HasMeta
 { 
     use Archivable;
     use Authorizable;
