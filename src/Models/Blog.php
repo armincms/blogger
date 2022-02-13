@@ -78,8 +78,20 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
     protected static function booted()
     {
         static::addGlobalScope(function ($builder) {
-            $builder->where($builder->qualifyColumn('resource'), static::resourceName());
+            $builder->unless(static::class === Blog::class, function($query) {
+                $query->where($builder->qualifyColumn('resource'), static::resourceName());
+            });
         });
+    }
+
+    /**
+     * Get the class name for polymorphic relations.
+     *
+     * @return string
+     */
+    public function getMorphClass()
+    {
+        return Blog::class;
     }
 
     /**
