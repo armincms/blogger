@@ -79,7 +79,7 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
     {
         static::addGlobalScope(function ($builder) {
             $builder->unless(static::class === Blog::class, function($query) {
-                $query->where($builder->qualifyColumn('resource'), static::resourceName());
+                $query->where($query->qualifyColumn('resource'), static::resourceName());
             });
         });
     }
