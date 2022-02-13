@@ -1,8 +1,7 @@
 <?php
 
 namespace Armincms\Blogger\Gutenberg\Templates; 
-
-use Zareismail\Gutenberg\Template; 
+ 
 use Zareismail\Gutenberg\Variable;
 
 class IndexPost extends Template 
