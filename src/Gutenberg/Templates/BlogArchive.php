@@ -1,12 +1,18 @@
 <?php
 
 namespace Armincms\Blogger\Gutenberg\Templates; 
-
-use Zareismail\Gutenberg\Template; 
+ 
 use Zareismail\Gutenberg\Variable;
 
 class BlogArchive extends Template 
 {       
+     /**
+     * The logical group associated with the template.
+     *
+     * @var string
+     */
+    public static $group = 'Blog';
+
     /**
      * Register the given variables.
      * 
