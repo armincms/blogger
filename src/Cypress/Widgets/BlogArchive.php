@@ -10,7 +10,6 @@ use Zareismail\Cypress\Http\Requests\CypressRequest;
 use Zareismail\Gutenberg\Gutenberg; 
 use Zareismail\Gutenberg\GutenbergWidget; 
 
-
 class BlogArchive extends GutenbergWidget
 {       
     /**
@@ -111,8 +110,7 @@ class BlogArchive extends GutenbergWidget
                 $query->latest(request('ordering'));
             }, function($query) {
                 $query->oldest(request('ordering'));
-            })
-            ->withoutGlobalScopes()
+            }) 
             ->paginate($this->metaValue('per_page'));
 
         return [
