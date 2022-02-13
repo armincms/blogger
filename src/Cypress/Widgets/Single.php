@@ -17,6 +17,13 @@ abstract class Single extends GutenbergWidget
     public $showOnComponent = false;
 
     /**
+     * The logical group associated with the widget.
+     *
+     * @var string
+     */
+    public static $group = 'Blog';
+
+    /**
      * Bootstrap the resource for the given request.
      * 
      * @param  \Zareismail\Cypress\Http\Requests\CypressRequest $request 

@@ -5,7 +5,14 @@ namespace Armincms\Blogger\Cypress\Widgets;
 use Armincms\Taggable\Cypress\Widgets\SingleTag;
 
 class BlogTag extends SingleTag
-{       
+{        
+    /**
+     * The logical group associated with the widget.
+     *
+     * @var string
+     */
+    public static $group = 'Blog';
+
     /**
      * Get the related model.
      * 

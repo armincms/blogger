@@ -11,7 +11,14 @@ use Zareismail\Gutenberg\Gutenberg;
 use Zareismail\Gutenberg\GutenbergWidget; 
 
 class BlogArchive extends GutenbergWidget
-{       
+{      
+    /**
+     * The logical group associated with the widget.
+     *
+     * @var string
+     */
+    public static $group = 'Blog';
+
     /**
      * The callback to be used to resolve the resourc's display.
      *

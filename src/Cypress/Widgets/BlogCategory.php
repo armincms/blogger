@@ -7,6 +7,13 @@ use Armincms\Categorizable\Cypress\Widgets\SingleCategory;
 class BlogCategory extends SingleCategory
 {       
     /**
+     * The logical group associated with the widget.
+     *
+     * @var string
+     */
+    public static $group = 'Blog';
+
+    /**
      * Get the related model.
      * 
      * @param  string $relationship 
