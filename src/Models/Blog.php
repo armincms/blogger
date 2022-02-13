@@ -152,13 +152,15 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
      * @param Zareismail\Cypress\Request\CypressRequest
      * @return array
      */
-    public function serializeForWidget($request): array
-    { 
+    public function serializeForWidget($request, $detail = true): array
+    {  
         return array_merge($this->toArray(), $this->getFirstMediasWithConversions()->toArray(), [
             'creation_date' => $this->created_at->format('Y F d'),
             'last_update'   => $this->updated_at->format('Y F d'),
             'author'=> $this->auth->fullname(), 
             'url'   => $this->getUrl($request),
+            'categories' => $this->categories->map->serializeForWidget($request, $detail),
+            'tags' => $this->tags->map->serializeForWidget($request, $detail),
         ]);
     }
 }

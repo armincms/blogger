@@ -64,7 +64,7 @@ class BlogCategory extends SingleCategory
             return $this->metaValue($resource::uriKey());
         });
 
-        return $query->resources($resources->values()->all());
+        return $query->resources($resources->values()->all())->with('categories', 'tags');
     }
 
     /**

@@ -113,6 +113,7 @@ class BlogArchive extends GutenbergWidget
 
         $blogs = Blog::resources($resources->values()->all())
             ->published()
+            ->with('categories', 'tags')
             ->when(request('direction') == 'asc', function($query) {
                 $query->latest(request('ordering'));
             }, function($query) {
