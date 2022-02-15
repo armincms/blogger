@@ -4,7 +4,7 @@ namespace Armincms\Blogger\Gutenberg\Templates;
  
 use Zareismail\Gutenberg\Variable;
 
-class SingleArticle extends SinglePost 
+class BlogCardWidget extends Template 
 {       
     /**
      * Register the given variables.
@@ -13,8 +13,10 @@ class SingleArticle extends SinglePost
      */
     public static function variables(): array
     {
-        return array_merge(parent::variables(), [ 
-            Variable::make('source', __('Article Source URL')), 
-        ]);
+        return [ 
+            Variable::make('items', __('HTML generated of blog items')), 
+
+            Variable::make('readmore_url', __('The readmore link url')), 
+        ];
     } 
 }

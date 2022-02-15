@@ -115,7 +115,10 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
             Cypress\Widgets\BlogArchive::class,
             Cypress\Widgets\BlogCategory::class,
             Cypress\Widgets\BlogTag::class,
-            Cypress\Widgets\FavoriteArticle::class,
+            Cypress\Widgets\ArticlesCard::class,
+            Cypress\Widgets\PodcastsCard::class,
+            Cypress\Widgets\PostsCard::class,
+            Cypress\Widgets\VideosCard::class,
             Cypress\Widgets\SingleArticle::class,
             Cypress\Widgets\SinglePodcast::class,
             Cypress\Widgets\SinglePost::class,
@@ -131,15 +134,16 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
     protected function templates()
     {   
         Gutenberg::templates([
-            \Armincms\Blogger\Gutenberg\Templates\BlogArchive::class,
+            \Armincms\Blogger\Gutenberg\Templates\BlogArchiveWidget::class,
+            \Armincms\Blogger\Gutenberg\Templates\BlogCardWidget::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexArticle::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexPodcast::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexPost::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexVideo::class, 
-            \Armincms\Blogger\Gutenberg\Templates\SingleArticle::class,
-            \Armincms\Blogger\Gutenberg\Templates\SinglePodcast::class,
-            \Armincms\Blogger\Gutenberg\Templates\SinglePost::class,
-            \Armincms\Blogger\Gutenberg\Templates\SingleVideo::class,
+            \Armincms\Blogger\Gutenberg\Templates\SingleArticleWidget::class,
+            \Armincms\Blogger\Gutenberg\Templates\SinglePodcastWidget::class,
+            \Armincms\Blogger\Gutenberg\Templates\SinglePostWidget::class,
+            \Armincms\Blogger\Gutenberg\Templates\SingleVideoWidget::class,
         ]); 
     }
 

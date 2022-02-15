@@ -4,7 +4,7 @@ namespace Armincms\Blogger\Gutenberg\Templates;
  
 use Zareismail\Gutenberg\Variable;
 
-class BlogArchive extends Template 
+class BlogArchiveWidget extends Template 
 {       
      /**
      * The logical group associated with the template.

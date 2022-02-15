@@ -4,7 +4,7 @@ namespace Armincms\Blogger\Gutenberg\Templates;
  
 use Zareismail\Gutenberg\Variable;
 
-class BlogFavorite extends Template 
+class SingleVideoWidget extends SinglePost 
 {       
     /**
      * Register the given variables.
@@ -13,10 +13,8 @@ class BlogFavorite extends Template
      */
     public static function variables(): array
     {
-        return [ 
-            Variable::make('items', __('HTML generated of blog items')), 
-
-            Variable::make('readmore_url', __('The readmore link url')), 
-        ];
+        return array_merge(parent::variables(), [ 
+            Variable::make('source', __('Video Source URL')), 
+        ]);
     } 
 }

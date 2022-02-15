@@ -4,7 +4,7 @@ namespace Armincms\Blogger\Gutenberg\Templates;
  
 use Zareismail\Gutenberg\Variable;
 
-class SingleVideo extends SinglePost 
+class SinglePodcastWidget extends SinglePost 
 {       
     /**
      * Register the given variables.
@@ -14,7 +14,7 @@ class SingleVideo extends SinglePost
     public static function variables(): array
     {
         return array_merge(parent::variables(), [ 
-            Variable::make('source', __('Video Source URL')), 
+            Variable::make('source', __('Podcast Source URL')), 
         ]);
     } 
 }
