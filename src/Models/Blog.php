@@ -144,23 +144,41 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
     public function translator() : string
     {
         return 'sequential';
-    }
-    
+    } 
+
     /**
-     * Serialize the model for pass into the client view.
+     * Serialize the model to pass into the client view for single item.
      *
      * @param Zareismail\Cypress\Request\CypressRequest
      * @return array
      */
-    public function serializeForWidget($request, $detail = true): array
-    {  
+    public function serializeForDetailWidget($request)
+    {
         return array_merge($this->toArray(), $this->getFirstMediasWithConversions()->toArray(), [
             'creation_date' => $this->created_at->format('Y F d'),
             'last_update'   => $this->updated_at->format('Y F d'),
             'author'=> $this->auth->fullname(), 
             'url'   => $this->getUrl($request),
-            'categories' => $this->categories->map->serializeForWidget($request, $detail),
-            'tags' => $this->tags->map->serializeForWidget($request, $detail),
+            'categories' => $this->categories->map->serializeForIndexWidget($request),
+            'tags' => $this->tags->map->serializeForIndexWidget($request),
+        ]);
+    }
+
+    /**
+     * Serialize the model to pass into the client view for collection of items.
+     *
+     * @param Zareismail\Cypress\Request\CypressRequest
+     * @return array
+     */
+    public function serializeForIndexWidget($request)
+    {
+        return array_merge($this->toArray(), $this->getFirstMediasWithConversions()->toArray(), [
+            'creation_date' => $this->created_at->format('Y F d'),
+            'last_update'   => $this->updated_at->format('Y F d'),
+            'author'=> $this->auth->fullname(), 
+            'url'   => $this->getUrl($request),
+            'categories' => $this->categories->map->serializeForIndexWidget($request),
+            'tags' => $this->tags->map->serializeForIndexWidget($request),
         ]);
     }
 }
