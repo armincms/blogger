@@ -3,17 +3,18 @@
 namespace Armincms\Blogger\Cypress\Widgets;
  
 use Armincms\Blogger\Models\Blog; 
+use Armincms\Categorizable\Nova\Category;
 use Armincms\Contract\Gutenberg\Templates\Pagination; 
 use Armincms\Contract\Gutenberg\Widgets\BootstrapsTemplate; 
 use Armincms\Contract\Gutenberg\Widgets\ResolvesDisplay; 
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;  
+use PhoenixLib\NovaNestedTreeAttachMany\NestedTreeAttachManyField as CategorySelect;
 use Zareismail\Cypress\Http\Requests\CypressRequest;
 use Zareismail\Gutenberg\Gutenberg; 
 use Zareismail\Gutenberg\GutenbergWidget; 
 
-
-abstract class Favorite extends GutenbergWidget
+abstract class Card extends GutenbergWidget
 {       
     use BootstrapsTemplate;
     use ResolvesDisplay;
@@ -88,12 +89,22 @@ abstract class Favorite extends GutenbergWidget
                 ->rules('required')
                 ->default('asc'),
 
+            Select::make(__('Readmore page'), 'config->readmore_url')->options(
+                Gutenberg::cachedWebsites()->forHandler(\Armincms\Blogger\Cypress\Blog::class)->flatMap->fragments->keyBy->getUrl()->map->name)
+                ->required()
+                ->rules('required'),
+
             Number::make(__('Number of resources'), 'config->count')
                 ->default(1)
                 ->min(1)
                 ->required()
                 ->rules('required', 'min:1')
                 ->help(__('Number of items that should be display.')), 
+
+            CategorySelect::make(__('Choose some categories'), 'config->categories', Category::class)
+                ->useAsField()
+                ->required()
+                ->rules('required'),
         ];
     } 
 
@@ -103,9 +114,14 @@ abstract class Favorite extends GutenbergWidget
      * @return array
      */
     public function serializeForDisplay(): array
-    {  
+    {   
         return [
-            'items' => $this->displayResource([], static::resourceName()),  
+            'items' => $this->items()->map(function($item) {
+                return $this->displayResource(
+                    $item->serializeForWidget($this->getRequest(), false), static::resourceName()
+                );
+            })->implode(''),  
+            'readmore_url' => $this->metaValue('readmore_url'),
         ];
     } 
 
@@ -119,7 +135,7 @@ abstract class Favorite extends GutenbergWidget
     public static function relatableTemplates($request, $query)
     {
         return $query->handledBy(
-            \Armincms\Blogger\Gutenberg\Templates\BlogFavorite::class
+            \Armincms\Blogger\Gutenberg\Templates\BlogCardWidget::class
         );
     }   
 
@@ -129,4 +145,21 @@ abstract class Favorite extends GutenbergWidget
      * @return string
      */
     abstract public static function resourceName();
+
+    protected function items()
+    {
+        return Blog::when($this->metaValue('categories'), function($query) {
+                $query->whereHas('categories', function($query) {
+                    $query->whereKey((array) $this->metaValue('categories'));
+                });
+            })
+            ->when($this->metaValue('direction') == 'desc', function($query) {
+                $query->oldest($this->metaValue('ordering'));
+            }, function($query) {
+                $query->latest($this->metaValue('ordering'));
+            })
+            ->limit(intval($this->metaValue('count')) ?: 3)
+            ->with('categories')
+            ->get();
+    }
 }

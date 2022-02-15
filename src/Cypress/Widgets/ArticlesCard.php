@@ -2,7 +2,7 @@
 
 namespace Armincms\Blogger\Cypress\Widgets; 
 
-class FavoriteArticle extends Favorite
+class ArticlesCard extends Card
 {        
     /**
      * Get resource name.
