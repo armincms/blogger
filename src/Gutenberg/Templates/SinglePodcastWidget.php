@@ -4,7 +4,7 @@ namespace Armincms\Blogger\Gutenberg\Templates;
  
 use Zareismail\Gutenberg\Variable;
 
-class SinglePodcastWidget extends SinglePost 
+class SinglePodcastWidget extends SinglePostWidget 
 {       
     /**
      * Register the given variables.
