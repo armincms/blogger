@@ -67,6 +67,8 @@ abstract class Single extends GutenbergWidget
      */
     public static function relatableTemplates($request, $query)
     {
-        return $query->handledBy('Armincms\\Blogger\\Gutenberg\\Templates\\' . class_basename(static::class));
+        return $query->handledBy(
+            'Armincms\\Blogger\\Gutenberg\\Templates\\'.class_basename(static::class).'Widget'
+        );
     }
 }
