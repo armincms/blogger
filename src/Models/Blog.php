@@ -123,7 +123,9 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
      */
     public function cypressFragment(): string
     {
-        return 'Armincms\Blogger\Cypress\Fragments\\'. class_basename(get_called_class());
+        return 'Armincms\Blogger\Cypress\Fragments\\'. class_basename(
+            $this->resource ?? get_called_class()
+        );
     }
 
     /**
