@@ -181,4 +181,14 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
             'tags' => $this->tags->map->serializeForIndexWidget($request),
         ]);
     }
+    
+    /**
+     * Query related Category.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relatinos\BelongsToMany
+     */
+    public function categories()
+    {
+        return $this->morphToMany(Category::class, 'categorizable', 'categorizable');
+    }
 }
