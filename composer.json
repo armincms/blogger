@@ -10,7 +10,7 @@
         "armincms/contract": "^1.0", 
         "armincms/nova-targomaan": "^1.0",
         "armincms/taggable": "^2.0", 
-        "armincms/markable": "^0.1", 
+        "armincms/markable": "^1.0", 
         "phoenix-lib/nova-nested-tree-attach-many": "^1.8",
         "whitecube/nova-flexible-content": "^0.2"
     },
