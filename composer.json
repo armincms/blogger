@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {  
         "armincms/categorizable": "^2.0", 
-        "armincms/contract": "^1.0", 
+        "armincms/contract": "^1.6", 
         "armincms/nova-targomaan": "^1.0",
         "armincms/taggable": "^2.0", 
         "armincms/markable": "^1.0", 

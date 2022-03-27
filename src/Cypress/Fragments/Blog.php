@@ -3,10 +3,11 @@
 namespace Armincms\Blogger\Cypress\Fragments;
  
 use Armincms\Contract\Concerns\InteractsWithModel; 
+use Armincms\Contract\Contracts\Resource; 
 use Zareismail\Cypress\Fragment; 
 use Zareismail\Cypress\Contracts\Resolvable; 
 
-abstract class Blog extends Fragment implements Resolvable
+abstract class Blog extends Fragment implements Resolvable, Resource
 {   
     use InteractsWithModel; 
 
