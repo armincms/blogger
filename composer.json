@@ -5,12 +5,12 @@
         "armincms"
     ],
     "license": "MIT",
-    "require": {  
-        "armincms/categorizable": "^2.0", 
-        "armincms/contract": "^1.6", 
+    "require": {
+        "armincms/categorizable": "^2.0",
+        "armincms/contract": "^1.6",
         "armincms/nova-targomaan": "^1.0",
-        "armincms/taggable": "^2.0", 
-        "armincms/markable": "^1.0", 
+        "armincms/taggable": "^2.0",
+        "armincms/markable": "^1.0",
         "phoenix-lib/nova-nested-tree-attach-many": "^1.8",
         "whitecube/nova-flexible-content": "^0.2"
     },
@@ -31,5 +31,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "version": "2.4.0"
+    "version": "3.0.0"
 }
