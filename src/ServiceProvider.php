@@ -3,12 +3,12 @@
 namespace Armincms\Blogger;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider;   
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider;
 use Laravel\Nova\Nova as LaravelNova;
 use Zareismail\Gutenberg\Gutenberg;
 
 class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
-{ 
+{
     /**
      * The policy mappings for the application.
      *
@@ -28,7 +28,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      */
     public function register()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations'); 
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->registerPolicies();
         $this->conversions();
         $this->resources();
@@ -41,22 +41,22 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
 
     /**
      * Set media conversions for resources.
-     * 
-     * @return 
+     *
+     * @return
      */
     protected function conversions()
     {
-        $this->app->afterResolving('conversion', function($manager) {
-            $manager->extend('article', function() {
+        $this->app->afterResolving('conversion', function ($manager) {
+            $manager->extend('article', function () {
                 return new \Armincms\Conversion\CommonConversion;
             });
-            $manager->extend('podcast', function() {
+            $manager->extend('podcast', function () {
                 return new \Armincms\Conversion\CommonConversion;
             });
-            $manager->extend('post', function() {
+            $manager->extend('post', function () {
                 return new \Armincms\Conversion\CommonConversion;
             });
-            $manager->extend('video', function() {
+            $manager->extend('video', function () {
                 return new \Armincms\Conversion\CommonConversion;
             });
         });
@@ -68,7 +68,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      * @return void
      */
     protected function resources()
-    { 
+    {
         LaravelNova::resources([
             Nova\Article::class,
             Nova\Podcast::class,
@@ -83,7 +83,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      * @return void
      */
     protected function components()
-    {  
+    {
         Gutenberg::components([
             Cypress\Blog::class,
         ]);
@@ -95,7 +95,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      * @return void
      */
     protected function fragments()
-    {   
+    {
         Gutenberg::fragments([
             Cypress\Fragments\Article::class,
             Cypress\Fragments\Podcast::class,
@@ -110,7 +110,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      * @return void
      */
     protected function widgets()
-    {   
+    {
         Gutenberg::widgets([
             Cypress\Widgets\BlogArchive::class,
             Cypress\Widgets\BlogCategory::class,
@@ -132,19 +132,19 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      * @return void
      */
     protected function templates()
-    {   
+    {
         Gutenberg::templates([
             \Armincms\Blogger\Gutenberg\Templates\BlogArchiveWidget::class,
             \Armincms\Blogger\Gutenberg\Templates\BlogCardWidget::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexArticle::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexPodcast::class,
             \Armincms\Blogger\Gutenberg\Templates\IndexPost::class,
-            \Armincms\Blogger\Gutenberg\Templates\IndexVideo::class, 
+            \Armincms\Blogger\Gutenberg\Templates\IndexVideo::class,
             \Armincms\Blogger\Gutenberg\Templates\SingleArticleWidget::class,
             \Armincms\Blogger\Gutenberg\Templates\SinglePodcastWidget::class,
             \Armincms\Blogger\Gutenberg\Templates\SinglePostWidget::class,
             \Armincms\Blogger\Gutenberg\Templates\SingleVideoWidget::class,
-        ]); 
+        ]);
     }
 
     /**
@@ -153,8 +153,8 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
      * @return void
      */
     protected function menus()
-    {    
-        $this->app->booted(function() {  
+    {
+        $this->app->booted(function () {
             $menus = array_unique(array_merge((array) config('nova-menu.menu_item_types'), [
                 Menus\Article::class,
                 Menus\Podcast::class,
@@ -162,8 +162,8 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
                 Menus\Video::class,
             ]));
 
-            app('config')->set('nova-menu.menu_item_types', $menus);  
-        }); 
+            app('config')->set('nova-menu.menu_item_types', $menus);
+        });
     }
 
     /**
@@ -174,7 +174,7 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
     public function provides()
     {
         return [];
-    } 
+    }
 
     /**
      * Get the events that trigger this service provider to register.
@@ -187,5 +187,5 @@ class ServiceProvider extends AuthServiceProvider implements DeferrableProvider
             \Illuminate\Console\Events\ArtisanStarting::class,
             \Laravel\Nova\Events\ServingNova::class,
         ];
-    } 
+    }
 }

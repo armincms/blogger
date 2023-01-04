@@ -3,7 +3,7 @@
 namespace Armincms\Blogger\Nova;
 
 class Article extends Resource
-{ 
+{
     /**
      * The model the resource corresponds to.
      *

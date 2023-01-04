@@ -1,9 +1,9 @@
 <?php
 
 namespace Armincms\Blogger\Nova;
- 
+
 class Post extends Resource
-{ 
+{
     /**
      * The model the resource corresponds to.
      *

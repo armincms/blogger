@@ -1,12 +1,12 @@
 <?php
 
-namespace Armincms\Blogger\Gutenberg\Templates; 
- 
+namespace Armincms\Blogger\Gutenberg\Templates;
+
 use Zareismail\Gutenberg\Variable;
 
-class BlogArchiveWidget extends Template 
-{       
-     /**
+class BlogArchiveWidget extends Template
+{
+    /**
      * The logical group associated with the template.
      *
      * @var string
@@ -15,19 +15,19 @@ class BlogArchiveWidget extends Template
 
     /**
      * Register the given variables.
-     * 
+     *
      * @return array
      */
     public static function variables(): array
     {
-        return [ 
+        return [
             Variable::make('sorts', __('Array of available sorting')),
 
             Variable::make('directions', __('Array of sort directions')),
 
-            Variable::make('items', __('HTML generated of blog items')), 
+            Variable::make('items', __('HTML generated of blog items')),
 
-            Variable::make('pagination', __('HTML generated of pagination links')), 
+            Variable::make('pagination', __('HTML generated of pagination links')),
         ];
-    } 
+    }
 }

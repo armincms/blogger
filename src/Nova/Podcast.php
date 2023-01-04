@@ -3,7 +3,7 @@
 namespace Armincms\Blogger\Nova;
 
 class Podcast extends Resource
-{ 
+{
     /**
      * The model the resource corresponds to.
      *

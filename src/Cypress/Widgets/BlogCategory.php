@@ -1,11 +1,11 @@
 <?php
 
-namespace Armincms\Blogger\Cypress\Widgets; 
+namespace Armincms\Blogger\Cypress\Widgets;
 
 use Armincms\Categorizable\Cypress\Widgets\SingleCategory;
 
 class BlogCategory extends SingleCategory
-{       
+{
     /**
      * The logical group associated with the widget.
      *
@@ -15,18 +15,18 @@ class BlogCategory extends SingleCategory
 
     /**
      * Get the related model.
-     * 
-     * @param  string $relationship 
+     *
+     * @param  string  $relationship
      * @return string
      */
     protected static function relationModel(string $relationship): string
-    { 
+    {
         return \Armincms\Blogger\Models\Blog::class;
     }
-  
+
     /**
      * Get the tag related content template name.
-     * 
+     *
      * @return string
      */
     public static function resources(): array
@@ -37,30 +37,30 @@ class BlogCategory extends SingleCategory
             \Armincms\Blogger\Nova\Post::class,
             \Armincms\Blogger\Nova\Video::class,
         ];
-    } 
-  
+    }
+
     /**
      * Get the template handlers for given resourceName.
-     * 
+     *
      * @return string
      */
     public static function handler(string $resourceName): array
     {
         return [
-            'Armincms\\Blogger\\Gutenberg\\Templates\\Index'. class_basename($resourceName)
+            'Armincms\\Blogger\\Gutenberg\\Templates\\Index'.class_basename($resourceName),
         ];
-    } 
+    }
 
     /**
      * Apply custom query to the relationship query.
-     * 
-     * @param  \Illuminate\Database\Eloquent\Builder  $query        
-     * @param  string  $relationship 
-     * @return \Illuminate\Database\Eloquent\Builder                
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $relationship
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function applyRelationshipQuery($query, $relationship)
     {
-        $resources = collect($this->resources())->filter(function($resource) {
+        $resources = collect($this->resources())->filter(function ($resource) {
             return $this->metaValue($resource::uriKey());
         });
 
@@ -69,9 +69,9 @@ class BlogCategory extends SingleCategory
 
     /**
      * Get resource for the given model.
-     * 
-     * @param  \Illuminate\Database\Eloqeunt\Model $model 
-     * @return string      
+     *
+     * @param  \Illuminate\Database\Eloqeunt\Model  $model
+     * @return string
      */
     public static function findResourceForModel($model)
     {

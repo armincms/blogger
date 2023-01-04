@@ -15,16 +15,17 @@ class CreateBlogsTable extends Migration
     {
         Schema::create('blogs', function (Blueprint $table) {
             $table->id();
-            $table->multilingualContent(); 
-            $table->markable(); 
+            $table->multilingualContent();
+            $table->markable();
             $table->string('resource')->default(\Armincms\Blogger\Nova\Post::class);
+            $table->resourceHits();
             $table->string('password')->nullable();
             $table->string('source', 500)->nullable();
-            $table->multilingualRefer(); 
+            $table->multilingualRefer();
+            $table->timestamp('publish_date')->nullable();
+            $table->timestamp('archive_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->timestamp('publish_date')->nullable(); 
-            $table->timestamp('archive_date')->nullable();
         });
     }
 

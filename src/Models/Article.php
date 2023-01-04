@@ -1,12 +1,12 @@
 <?php
 
-namespace Armincms\Blogger\Models; 
+namespace Armincms\Blogger\Models;
 
-class Article extends Blog  
-{    
+class Article extends Blog
+{
     /**
      * Get the available media collections.
-     * 
+     *
      * @return array
      */
     public function getMediaCollections(): array
@@ -14,10 +14,10 @@ class Article extends Blog
         return [
             'image' => [
                 'conversions' => ['article'],
-                'multiple'  => false,
-                'disk'      => 'image',
-                'limit'     => 20, // count of images
-                'accepts'   => ['image/jpeg', 'image/jpg', 'image/png'],
+                'multiple' => false,
+                'disk' => 'image',
+                'limit' => 20, // count of images
+                'accepts' => ['image/jpeg', 'image/jpg', 'image/png'],
             ],
         ];
     }

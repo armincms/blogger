@@ -1,19 +1,19 @@
 <?php
 
-namespace Armincms\Blogger\Gutenberg\Templates; 
- 
+namespace Armincms\Blogger\Gutenberg\Templates;
+
 use Zareismail\Gutenberg\Variable;
 
-class SinglePostWidget extends Template 
-{       
+class SinglePostWidget extends Template
+{
     /**
      * Register the given variables.
-     * 
+     *
      * @return array
      */
     public static function variables(): array
     {
-        return [ 
+        return [
             Variable::make('id', __('Post Id')),
 
             Variable::make('name', __('Post Name')),
@@ -34,7 +34,7 @@ class SinglePostWidget extends Template
 
             Variable::make('image.templateName', __(
                 'Image with the required template (example: image.common-main)'
-            ))
+            )),
         ];
-    } 
+    }
 }

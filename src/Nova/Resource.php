@@ -2,26 +2,27 @@
 
 namespace Armincms\Blogger\Nova;
 
-use Armincms\Blogger\Nova\Fields\Category;
+use Armincms\Categorizable\Nova\Category;
 use Armincms\Contract\Nova\Authorizable;
 use Armincms\Contract\Nova\Fields;
 use Armincms\Fields\Targomaan;
-use Armincms\Taggable\Nova\Fields\Tag;
+use Armincms\Taggable\Nova\Tag as NovaTag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Tag;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
-use Laravel\Nova\Resource as NovaResource;  
+use Laravel\Nova\Query\Search\SearchableRelation;
+use Laravel\Nova\Resource as NovaResource;
 
 abstract class Resource extends NovaResource
-{ 
+{
     use Authorizable;
     use Fields;
 
@@ -45,8 +46,8 @@ abstract class Resource extends NovaResource
      * @var array
      */
     public static $search = [
-        'id', 'name'
-    ]; 
+        'id', 'name',
+    ];
 
     /**
      * Get the fields displayed by the resource.
@@ -57,58 +58,43 @@ abstract class Resource extends NovaResource
     public function fields(Request $request)
     {
         return [
-            ID::make(__(static::resourceName(). ' ID'), 'id')->sortable(),
+            ID::make(__(static::resourceName().' ID'), 'id')->sortable(),
 
-            Targomaan::make([ 
-                Select::make(__(static::resourceName(). ' Status'), 'marked_as')
+            Targomaan::make([
+                Select::make(__(static::resourceName().' Status'), 'marked_as')
                     ->options($this->statuses($request))
                     ->required()
                     ->rules('required')
-                    ->default('draft'),
+                    ->default('draft')
+                    ->displayUsingLabels(),
 
-                Text::make(__(static::resourceName(). ' Name'), 'name')
-                    ->required()
-                    ->rules('required'),
+                Text::make(__(static::resourceName().' Name'), 'name')->required()->rules('required'),
 
-                Text::make(__(static::resourceName(). ' Slug'), 'slug')
-                    ->nullable(), 
-                
-                Text::make(__(static::resourceName(). ' Source URL'), 'source')
+                Text::make(__(static::resourceName().' Slug'), 'slug')->nullable(),
+
+                Text::make(__(static::resourceName().' Source URL'), 'source')
                     ->required()
                     ->rules('required', 'url')
-                    ->canSee(function($request) {
-                        return static::hasSource($request);
-                    }),
+                    ->canSee(fn ($request) => static::hasSource($request)),
+            ]),
 
-                Category::make(__(static::resourceName(). ' Categories'))
-                    ->required()
-                    ->rules('required'),
-                
-                Tag::make(__(static::resourceName(). ' Tags'), function($value, $resource, $attribute) {
-                    $locale = explode('::', $attribute)[1];
+            // TODO: have to sync for other languages
+            Tag::make(__('Categoires'), 'categories', Category::class)->showCreateRelationButton()->required()->rules('required'),
+            Tag::make(__('Tags'), 'tags', NovaTag::class)->showCreateRelationButton()->required()->rules('required'),
 
-                    if ($this->locale != $locale) {
-                        $value = data_get($resource->translations->firstWhere('locale', $locale), 'queued_tags');
-                    }
+            Targomaan::make([
+                $this->resourceImage(__(static::resourceName().' Featured Image')),
 
-                    return $value;
-                }),
+                Textarea::make(__(static::resourceName().' Summary'), 'summary')->nullable(),
 
-                $this->resourceImage(__(static::resourceName(). ' Featured Image')),
+                $this->resourceEditor(__(static::resourceName().' Content'), 'content'),
 
-                Textarea::make(__(static::resourceName(). ' Summary'), 'summary')
-                    ->nullable(),
+                Hidden::make('resource')->onlyOnForms()->withMeta(['value' => get_called_class()]),
+            ]),
 
-                $this->resourceEditor(__(static::resourceName(). ' Content'), 'content'),
-
-                Hidden::make('resource')  
-                    ->onlyOnForms()
-                    ->withMeta(['value' => get_called_class()]),
-            ]), 
-
-            Panel::make(__('Advanced ' .static::resourceName(). ' Configurations'), [
+            Panel::make(__('Advanced '.static::resourceName().' Configurations'), [
                 Targomaan::make([
-                    $this->resourceMeta(__(static::resourceName(). ' Meta')),
+                    $this->resourceMeta(__(static::resourceName().' Meta')),
                 ]),
             ]),
         ];
@@ -125,22 +111,22 @@ abstract class Resource extends NovaResource
         $model = static::newModel();
 
         return [
-            ID::make(__(static::resourceName(). ' ID'), 'id')->sortable(), 
+            ID::make(__(static::resourceName().' ID'), 'id')->sortable(),
 
-            Text::make(__(static::resourceName(). ' Name'), 'name'), 
+            Text::make(__(static::resourceName().' Name'), 'name'),
 
             $this->resourceUrls(),
 
-            Badge::make(__(static::resourceName(). ' Status'), 'marked_as')
+            Badge::make(__(static::resourceName().' Status'), 'marked_as')
                 ->map([
                     $model->getPublishValue() => 'success',
-                    $model->getDraftValue()   => 'info',
+                    $model->getDraftValue() => 'info',
                     $model->getArchiveValue() => 'warning',
                     $model->getPendingValue() => 'danger',
                 ])
                 ->labels([
                     $model->getPublishValue() => __($model->getPublishValue()),
-                    $model->getDraftValue()   => __($model->getDraftValue()),
+                    $model->getDraftValue() => __($model->getDraftValue()),
                     $model->getArchiveValue() => __($model->getArchiveValue()),
                     $model->getPendingValue() => __($model->getPendingValue()),
                 ]),
@@ -149,35 +135,37 @@ abstract class Resource extends NovaResource
 
     /**
      * Get the page statuses.
-     * 
-     * @param  Request $request 
-     * @return array           
+     *
+     * @param  Request  $request
+     * @return array
      */
     public function statuses(Request $request)
     {
         $model = static::newModel();
 
         return $this->filter([
-            $model->getDraftValue() => __('Store ' .Str::lower(static::resourceName()). ' as draft'),
+            $model->getDraftValue() => __('Store '.Str::lower(static::resourceName()).' as draft'),
 
-            $this->mergeWhen($request->user()->can('publish', $model), function() use ($model) {
-                return [
-                    $model->getPublishValue() => __('Publish the '.Str::lower(static::resourceName())),
-                ];
-            }, function() {
-                return [
-                    $model->getPendingValue() => __(
-                        'Request ' .Str::lower(static::resourceName()). ' publishing'
-                    ),
-                ];
-            }),
+            $this->mergeWhen($request->user()->can('publish', $model), [
+                $model->getPublishValue() => __('Publish the '.Str::lower(static::resourceName())),
+            ], [
+                $model->getPendingValue() => __('Request '.Str::lower(static::resourceName()).' publishing'),
+            ]),
 
-            $this->mergeWhen($request->user()->can('archive', $model), function() use ($model) {
-                return [
-                    $model->getArchiveValue() => __('Archive the '.Str::lower(static::resourceName())),
-                ];
-            }), 
+            $this->mergeWhen($request->user()->can('archive', $model), [
+                $model->getArchiveValue() => __('Archive the '.Str::lower(static::resourceName())),
+            ]),
         ]);
+    }
+
+    /**
+     * Get the searchable columns for the resource.
+     *
+     * @return array
+     */
+    public static function searchableColumns()
+    {
+        return ['id', new SearchableRelation('translations', 'name')];
     }
 
     /**
@@ -192,9 +180,9 @@ abstract class Resource extends NovaResource
 
     /**
      * Determine if resource nedd source.
-     * 
+     *
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return boolean         
+     * @return bool
      */
     public function hasSource($request)
     {

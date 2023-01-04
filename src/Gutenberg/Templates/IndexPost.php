@@ -1,19 +1,19 @@
 <?php
 
-namespace Armincms\Blogger\Gutenberg\Templates; 
- 
+namespace Armincms\Blogger\Gutenberg\Templates;
+
 use Zareismail\Gutenberg\Variable;
 
-class IndexPost extends Template 
-{       
+class IndexPost extends Template
+{
     /**
      * Register the given variables.
-     * 
+     *
      * @return array
      */
     public static function variables(): array
     {
-        return [ 
+        return [
             Variable::make('id', __('Post Id')),
 
             Variable::make('name', __('Post Name')),
@@ -28,11 +28,11 @@ class IndexPost extends Template
 
             Variable::make('last_update', __('Post Update Date')),
 
-            Variable::make('author', __('Post Author')),  
+            Variable::make('author', __('Post Author')),
 
             Variable::make('image.templateName', __(
                 'Image with the required template (example: image.common-main)'
-            ))
+            )),
         ];
-    } 
+    }
 }

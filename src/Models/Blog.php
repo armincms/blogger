@@ -17,12 +17,11 @@ use Armincms\Contract\Contracts\HasMeta;
 use Armincms\Markable\Archivable;
 use Armincms\Taggable\HasTags;
 use Armincms\Targomaan\Concerns\InteractsWithTargomaan;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model; 
-use Illuminate\Database\Eloquent\SoftDeletes; 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Blog extends Model implements Authenticatable, HasMedia, HasMeta
-{ 
+{
     use Archivable;
     use Authorizable;
     use HasCategories;
@@ -49,7 +48,7 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
      *
      * @var string[]
      */
-    protected $fillable = [ 
+    protected $fillable = [
     ];
 
     /**
@@ -57,7 +56,7 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
      *
      * @var array
      */
-    protected $hidden = [ 
+    protected $hidden = [
     ];
 
     /**
@@ -65,7 +64,7 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
      *
      * @var array
      */
-    protected $casts = [ 
+    protected $casts = [
         'publish_date' => 'timestamp',
         'archive_date' => 'timestamp',
     ];
@@ -78,7 +77,7 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
     protected static function booted()
     {
         static::addGlobalScope(function ($builder) {
-            $builder->unless(static::class === Blog::class, function($query) {
+            $builder->unless(static::class === Blog::class, function ($query) {
                 $query->where($query->qualifyColumn('resource'), static::resourceName());
             });
         });
@@ -106,47 +105,47 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
 
     /**
      * Query where has the gicen resoure tpes.
-     * 
-     * @param  \Illuminate\Database\Eloquent\Builder $query     
-     * @param  array  $resources 
-     * @return \Illuminate\Database\Eloquent\Builder            
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $resources
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeResources($query, array $resources)
     {
         return $query->whereIn($query->qualifyColumn('resource'), $resources);
-    } 
+    }
 
     /**
      * Get the corresponding cypress fragment.
-     * 
-     * @return 
+     *
+     * @return
      */
     public function cypressFragment(): string
     {
-        return 'Armincms\Blogger\Cypress\Fragments\\'. class_basename(
+        return 'Armincms\Blogger\Cypress\Fragments\\'.class_basename(
             $this->resource ?? get_called_class()
         );
     }
 
     /**
      * Get scoped resource name.
-     * 
+     *
      * @return string
      */
     public static function resourceName(): string
     {
-        return 'Armincms\Blogger\Nova\\'. class_basename(get_called_class());
+        return 'Armincms\Blogger\Nova\\'.class_basename(get_called_class());
     }
 
     /**
      * Get the targomaan driver.
-     * 
+     *
      * @return string
      */
-    public function translator() : string
+    public function translator(): string
     {
         return 'sequential';
-    } 
+    }
 
     /**
      * Serialize the model to pass into the client view for single item.
@@ -158,9 +157,9 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
     {
         return array_merge($this->toArray(), $this->getFirstMediasWithConversions()->toArray(), [
             'creation_date' => $this->created_at->format('Y F d'),
-            'last_update'   => $this->updated_at->format('Y F d'),
-            'author'=> $this->auth->fullname(), 
-            'url'   => $this->getUrl($request),
+            'last_update' => $this->updated_at->format('Y F d'),
+            'author' => $this->auth->fullname(),
+            'url' => $this->getUrl($request),
             'categories' => $this->categories->map->serializeForIndexWidget($request),
             'tags' => $this->tags->map->serializeForIndexWidget($request),
         ]);
@@ -176,21 +175,11 @@ class Blog extends Model implements Authenticatable, HasMedia, HasMeta
     {
         return array_merge($this->toArray(), $this->getFirstMediasWithConversions()->toArray(), [
             'creation_date' => $this->created_at->format('Y F d'),
-            'last_update'   => $this->updated_at->format('Y F d'),
-            'author'=> $this->auth->fullname(), 
-            'url'   => $this->getUrl($request),
+            'last_update' => $this->updated_at->format('Y F d'),
+            'author' => $this->auth->fullname(),
+            'url' => $this->getUrl($request),
             'categories' => $this->categories->map->serializeForIndexWidget($request),
             'tags' => $this->tags->map->serializeForIndexWidget($request),
         ]);
-    }
-    
-    /**
-     * Query related Category.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relatinos\BelongsToMany
-     */
-    public function categories()
-    {
-        return $this->morphToMany(Category::class, 'categorizable', 'categorizable');
     }
 }
